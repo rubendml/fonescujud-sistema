@@ -734,14 +734,16 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
   e.preventDefault();
 
   const usuarioId = parseInt(document.getElementById('creditoUsuario').value);
-  const monto = parseInt(document.getElementById('creditoMonto').value) || 0;
+  const monto = parseFloat(document.getElementById('creditoMonto').value) || 0;
   const plazo = parseInt(document.getElementById('creditoPlazo').value) || 0;
   const interes = parseFloat(document.getElementById('creditoInteres').value) || 0;
   const fecha = document.getElementById('creditoFecha').value;
+  const estado = document.getElementById('creditoEstado')?.value || 'activo';
 
   // Validar que todos los datos estén presentes
   if (!usuarioId || !monto || !plazo || !interes || !fecha) {
     showToast('Por favor completa todos los campos', 'error');
+    console.log('Validación fallida:', { usuarioId, monto, plazo, interes, fecha });
     return;
   }
 
@@ -752,13 +754,14 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
     plazo_meses: plazo,
     porcentaje_interes: interes,
     fecha_desembolso: fecha,
-    estado: 'activo'
+    estado: estado
   };
+
+  console.log('Enviando crédito:', formData);
 
   try {
     const response = await authFetch(`${API_BASE_URL}/creditos`, {
       method: 'POST',
-      headers: getAuthHeaders(),
       body: JSON.stringify(formData)
     });
 
@@ -770,11 +773,14 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
       fetchCreditos();
     } else {
       const error = await response.json();
+      console.error('Error del servidor:', error);
       showToast('Error: ' + (error.error || 'Error al guardar crédito'), 'error');
     }
   } catch (error) {
     console.error('Error:', error);
-    showToast('Error al guardar crédito', 'error');
+    if (error.message !== 'Unauthorized') {
+      showToast('Error al guardar crédito', 'error');
+    }
   }
 });
 
