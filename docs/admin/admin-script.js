@@ -7,11 +7,47 @@ let currentEditingType = null;
 
 // Utility Functions
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token') || 'development-token';
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.error('No hay token de autenticación');
+    window.location.href = '../login.html';
+    return {};
+  }
   return {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`
   };
+};
+
+// Manejar errores de autenticación
+const handleAuthError = (response) => {
+  if (response.status === 401) {
+    console.error('Token expirado o inválido');
+    localStorage.removeItem('token');
+    localStorage.removeItem('rol');
+    alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+    window.location.href = '../login.html';
+    return true;
+  }
+  return false;
+};
+
+// Fetch con manejo de autenticación
+const authFetch = async (url, options = {}) => {
+  const headers = getAuthHeaders();
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...headers,
+      ...options.headers
+    }
+  });
+  
+  if (handleAuthError(response)) {
+    throw new Error('Unauthorized');
+  }
+  
+  return response;
 };
 
 const formatCurrency = (value) => {
@@ -55,7 +91,7 @@ let usuariosCache = [];
 // Cargar usuarios en los dropdowns
 const loadUsuariosInSelects = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/usuarios`);
+    const response = await authFetch(`${API_BASE_URL}/usuarios`);
     const usuarios = await response.json();
     usuariosCache = usuarios;
 
@@ -83,13 +119,15 @@ const loadUsuariosInSelects = async () => {
 // Dashboard Data Fetch
 const fetchDashboardData = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/dashboard`);
+    const response = await authFetch(`${API_BASE_URL}/dashboard`);
     if (!response.ok) throw new Error('Error fetching data');
     const data = await response.json();
     updateDashboard(data);
   } catch (error) {
     console.error('Error:', error);
-    updateDashboardError();
+    if (error.message !== 'Unauthorized') {
+      updateDashboardError();
+    }
   }
 };
 
@@ -168,7 +206,7 @@ const updateDashboardError = () => {
 // Fetch Usuarios
 const fetchUsuarios = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/usuarios`);
+    const response = await authFetch(`${API_BASE_URL}/usuarios`);
     if (!response.ok) throw new Error('Error fetching usuarios');
     const usuarios = await response.json();
     displayUsuarios(usuarios);
@@ -223,7 +261,7 @@ const deleteUsuario = async (id) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) return;
 
   try {
-    const response = await fetch(`${API_BASE_URL}/usuarios/${id}`, {
+    const response = await authFetch(`${API_BASE_URL}/usuarios/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
@@ -243,7 +281,7 @@ const deleteUsuario = async (id) => {
 // Fetch Cuotas
 const fetchCuotas = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/cuotas`);
+    const response = await authFetch(`${API_BASE_URL}/cuotas`);
     if (!response.ok) throw new Error('Error fetching cuotas');
     const cuotas = await response.json();
     displayCuotas(cuotas);
@@ -280,7 +318,7 @@ const editCuota = (id) => {
 // Fetch Créditos
 const fetchCreditos = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/creditos`);
+    const response = await authFetch(`${API_BASE_URL}/creditos`);
     if (!response.ok) throw new Error('Error fetching creditos');
     const creditos = await response.json();
     displayCreditos(creditos);
@@ -331,7 +369,7 @@ const abonarCredito = (id) => {
 const registrarAbono = async (creditoId, monto) => {
   try {
     console.log('[registrarAbono] Enviando:', { credito_id: creditoId, monto });
-    const response = await fetch(`${API_BASE_URL}/creditos/abono`, {
+    const response = await authFetch(`${API_BASE_URL}/creditos/abono`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ credito_id: creditoId, monto })
@@ -368,7 +406,7 @@ const registrarInteres = (id) => {
 const crearRegistroInteres = async (creditoId, monto) => {
   try {
     console.log('[crearRegistroInteres] Enviando:', { credito_id: creditoId, monto });
-    const response = await fetch(`${API_BASE_URL}/creditos/interes`, {
+    const response = await authFetch(`${API_BASE_URL}/creditos/interes`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ credito_id: creditoId, monto })
@@ -397,7 +435,7 @@ const crearRegistroInteres = async (creditoId, monto) => {
 const finalizarCredito = async (id) => {
   if (confirm('¿Estás seguro de que deseas finalizar este crédito?')) {
     try {
-      const response = await fetch(`${API_BASE_URL}/creditos/finalizar`, {
+      const response = await authFetch(`${API_BASE_URL}/creditos/finalizar`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ credito_id: id, estado_final: 'pagado' })
@@ -427,7 +465,7 @@ const editCredito = (id) => {
 // Fetch Multas
 const fetchMultas = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/multas`);
+    const response = await authFetch(`${API_BASE_URL}/multas`);
     if (!response.ok) throw new Error('Error fetching multas');
     const multas = await response.json();
     displayMultas(multas);
@@ -465,7 +503,7 @@ const displayMultas = (multas) => {
 
 const editMulta = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/multas/${id}`);
+    const response = await authFetch(`${API_BASE_URL}/multas/${id}`);
     if (!response.ok) throw new Error('Error cargando multa');
     const multa = await response.json();
 
@@ -497,13 +535,15 @@ const editMulta = async (id) => {
 // Fetch Movimientos
 const fetchMovimientos = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/movimientos`);
+    const response = await authFetch(`${API_BASE_URL}/movimientos`);
     if (!response.ok) throw new Error('Error fetching movimientos');
     const movimientos = await response.json();
     displayMovimientos(movimientos);
   } catch (error) {
     console.error('Error:', error);
-    displayError('movimientos');
+    if (error.message !== 'Unauthorized') {
+      displayError('movimientos');
+    }
   }
 };
 
@@ -549,12 +589,12 @@ const displayMovimientos = (movimientos) => {
 const fetchReportes = async () => {
   try {
     // Obtener datos de dashboard
-    const dashResponse = await fetch(`${API_BASE_URL}/dashboard`);
+    const dashResponse = await authFetch(`${API_BASE_URL}/dashboard`);
     if (!dashResponse.ok) throw new Error('Error fetching dashboard');
     const dashData = await dashResponse.json();
 
     // Obtener datos de movimientos
-    const movResponse = await fetch(`${API_BASE_URL}/movimientos/resumen`);
+    const movResponse = await authFetch(`${API_BASE_URL}/movimientos/resumen`);
     if (!movResponse.ok) throw new Error('Error fetching movimientos resumen');
     const movData = await movResponse.json();
 
@@ -625,13 +665,13 @@ document.getElementById('usuarioForm')?.addEventListener('submit', async (e) => 
   try {
     let response;
     if (currentEditingId) {
-      response = await fetch(`${API_BASE_URL}/usuarios/${currentEditingId}`, {
+      response = await authFetch(`${API_BASE_URL}/usuarios/${currentEditingId}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(formData)
       });
     } else {
-      response = await fetch(`${API_BASE_URL}/usuarios`, {
+      response = await authFetch(`${API_BASE_URL}/usuarios`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(formData)
@@ -668,7 +708,7 @@ document.getElementById('cuotaForm')?.addEventListener('submit', async (e) => {
   };
 
   try {
-    const response = await fetch(`${API_BASE_URL}/cuotas`, {
+    const response = await authFetch(`${API_BASE_URL}/cuotas`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(formData)
@@ -716,7 +756,7 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
   };
 
   try {
-    const response = await fetch(`${API_BASE_URL}/creditos`, {
+    const response = await authFetch(`${API_BASE_URL}/creditos`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(formData)
@@ -755,14 +795,14 @@ document.getElementById('multaForm')?.addEventListener('submit', async (e) => {
 
     if (currentEditingId) {
       // Editar multa existente
-      response = await fetch(`${API_BASE_URL}/multas/${currentEditingId}`, {
+      response = await authFetch(`${API_BASE_URL}/multas/${currentEditingId}`, {
         method: 'PATCH',
         headers: getAuthHeaders(),
         body: JSON.stringify(formData)
       });
     } else {
       // Crear nueva multa
-      response = await fetch(`${API_BASE_URL}/multas`, {
+      response = await authFetch(`${API_BASE_URL}/multas`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(formData)
