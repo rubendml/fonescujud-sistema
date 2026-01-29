@@ -733,17 +733,39 @@ document.getElementById('cuotaForm')?.addEventListener('submit', async (e) => {
 document.getElementById('creditoForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const usuarioId = parseInt(document.getElementById('creditoUsuario').value);
-  const monto = parseFloat(document.getElementById('creditoMonto').value) || 0;
-  const plazo = parseInt(document.getElementById('creditoPlazo').value) || 0;
-  const interes = parseFloat(document.getElementById('creditoInteres').value) || 0;
-  const fecha = document.getElementById('creditoFecha').value;
+  const usuarioIdStr = document.getElementById('creditoUsuario').value;
+  const montoStr = document.getElementById('creditoMonto').value;
+  const plazoStr = document.getElementById('creditoPlazo').value;
+  const interesStr = document.getElementById('creditoInteres').value;
+  const fechaStr = document.getElementById('creditoFecha').value;
   const estado = document.getElementById('creditoEstado')?.value || 'activo';
 
-  // Validar que todos los datos estén presentes
-  if (!usuarioId || !monto || !plazo || !interes || !fecha) {
+  // Log de valores crudos
+  console.log('Valores del formulario:', {
+    usuarioIdStr, montoStr, plazoStr, interesStr, fechaStr
+  });
+
+  // Validación más robusta
+  if (!usuarioIdStr || !montoStr || !plazoStr || !interesStr || !fechaStr) {
     showToast('Por favor completa todos los campos', 'error');
-    console.log('Validación fallida:', { usuarioId, monto, plazo, interes, fecha });
+    console.log('Campo vacío detectado');
+    return;
+  }
+
+  const usuarioId = parseInt(usuarioIdStr, 10);
+  const monto = parseFloat(montoStr);
+  const plazo = parseInt(plazoStr, 10);
+  const interes = parseFloat(interesStr);
+
+  // Validación numérica
+  if (isNaN(usuarioId) || isNaN(monto) || isNaN(plazo) || isNaN(interes)) {
+    showToast('Por favor verifica los valores numéricos', 'error');
+    console.log('Error de conversión:', { usuarioId, monto, plazo, interes });
+    return;
+  }
+
+  if (usuarioId <= 0 || monto <= 0 || plazo <= 0 || interes < 0) {
+    showToast('Los montos y plazos deben ser mayores a 0', 'error');
     return;
   }
 
