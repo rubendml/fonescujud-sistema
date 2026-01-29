@@ -1,6 +1,3 @@
-// API Configuration
-const API_BASE_URL = 'http://localhost:3000/api';
-
 // Utility Functions
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('es-CO', {
