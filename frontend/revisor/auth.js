@@ -11,7 +11,8 @@
 window.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.querySelector('.logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             localStorage.removeItem('token');
             localStorage.removeItem('rol');
             window.location.href = '../login.html';
