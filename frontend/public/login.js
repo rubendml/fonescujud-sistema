@@ -20,9 +20,9 @@ loginForm.addEventListener('submit', async (e) => {
             localStorage.setItem('rol', data.rol);
             // Redirigir según el rol
             if (data.rol === 'admin') {
-                window.location.href = '../admin/index.html';
+                window.location.href = '/fonescujud-sistema/admin/';
             } else if (data.rol === 'revisor') {
-                window.location.href = '../revisor/index.html';
+                window.location.href = '/fonescujud-sistema/revisor/';
             } else {
                 loginError.textContent = 'Rol no autorizado.';
                 loginError.style.display = 'block';
