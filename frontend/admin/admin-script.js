@@ -775,7 +775,7 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
     monto_solicitado: monto,
     plazo_meses: plazo,
     porcentaje_interes: interes,
-    fecha_desembolso: fecha
+    fecha_desembolso: fechaStr
   };
 
   console.log('Enviando crédito:', formData);
