@@ -43,8 +43,10 @@ app.use((err, req, res, next) => {
 
 const PORT = config.server.port;
 
-app.listen(PORT, () => {
-  console.log(`
+// Solo iniciar servidor si no está en Vercel
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`
 ╔════════════════════════════════════════╗
 ║     FONESCUJUD - Sistema de Fondo      ║
 ║             Backend Running             ║
@@ -53,7 +55,8 @@ app.listen(PORT, () => {
 ║  Entorno: ${config.server.nodeEnv}
 ║  Supabase: ${config.supabase.url ? 'Conectado' : 'No configurado'}
 ╚════════════════════════════════════════╝
-  `);
-});
+    `);
+  });
+}
 
 export default app;
