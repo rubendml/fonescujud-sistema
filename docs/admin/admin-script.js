@@ -1,5 +1,5 @@
-// API Configuration
-const API_BASE_URL = window.API_BASE_URL || 'https://fonescujud-sistema.vercel.app/api';
+// API Configuration viene de config.js cargado en el HTML
+// const API_BASE_URL ya está definido globalmente
 
 // State for editing
 let currentEditingId = null;
