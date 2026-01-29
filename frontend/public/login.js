@@ -18,11 +18,14 @@ loginForm.addEventListener('submit', async (e) => {
         if (response.ok && data.token) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('rol', data.rol);
-            // Redirigir según el rol
+            // Redirigir segï¿½n el rol
             if (data.rol === 'admin') {
-                window.location.href = './admin/';
+                // Detectar si estamos en GitHub Pages y agregar la ruta base si es necesario
+                const basePath = window.location.hostname === 'rubendml.github.io' ? '/fonescujud-sistema/' : '/';
+                window.location.href = basePath + 'admin/';
             } else if (data.rol === 'revisor') {
-                window.location.href = './revisor/';
+                const basePath = window.location.hostname === 'rubendml.github.io' ? '/fonescujud-sistema/' : '/';
+                window.location.href = basePath + 'revisor/';
             } else {
                 loginError.textContent = 'Rol no autorizado.';
                 loginError.style.display = 'block';
@@ -32,7 +35,7 @@ loginForm.addEventListener('submit', async (e) => {
             loginError.style.display = 'block';
         }
     } catch (err) {
-        loginError.textContent = 'Error de conexión con el servidor';
+        loginError.textContent = 'Error de conexiï¿½n con el servidor';
         loginError.style.display = 'block';
     }
 });
