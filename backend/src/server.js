@@ -12,16 +12,25 @@ import authRoutes from './routes/auth.js';
 const app = express();
 
 // Middleware - Configuración de CORS para producción
-app.use(cors({
-  origin: [
-    'http://localhost:8000',
-    'https://rubendml.github.io',
-    'https://fonescujud-sistema.vercel.app'
-  ],
+const allowedOrigins = [
+  'http://localhost:8000',
+  'https://rubendml.github.io',
+  'https://fonescujud-sistema.vercel.app'
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Request logging
