@@ -1,0 +1,143 @@
+/* Revisor Panel - Inherits Admin Styles */
+/* Minimal overrides specific to revisor role */
+
+:root {
+  --revisor-primary: #003d5c;
+  --revisor-accent: #0066aa;
+}
+
+/* The revisor panel uses admin layout styles */
+/* These rules ensure everything displays correctly */
+
+.revisor-sidebar {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.admin-header h1 {
+  color: var(--color-primary);
+}
+
+.admin-header p {
+  color: #666;
+}
+
+/* Ensure stat cards display properly */
+.stat-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+/* Ensure tables display properly */
+.data-table {
+  background: white;
+  border: 1px solid var(--color-border);
+}
+
+.data-table th {
+  background-color: #f8f9fa;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Info boxes styling */
+.info-box {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.info-box .label {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.info-box .value {
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0 0 0;
+}
+
+/* Badge styles */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.badge-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.badge-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* Section styling */
+.section-toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-input,
+.filter-select {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.search-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 61, 92, 0.1);
+}
+
+/* Utility classes */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #999;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .section-toolbar {
+    flex-direction: column;
+  }
+
+  .search-input,
+  .filter-select {
+    width: 100%;
+  }
+
+  .data-table {
+    font-size: 0.9rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem;
+  }
+}
+
+

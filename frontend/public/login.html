@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FONESCUJUD - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #f4f8fb;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 2.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px #0001;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-logo img {
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        .login-logo span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #073042;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 1.3rem;
+            margin-bottom: 1.2rem;
+            color: #073042;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: #073042;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 0.7rem;
+            background: #073042;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-form button:hover {
+            background: #125c7a;
+        }
+
+        .login-error {
+            color: #c00;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #073042;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-logo">
+            <img src="img/logo.png" alt="Logo FONESCUJUD">
+            <span>FONESCUJUD</span>
+        </div>
+        <div class="login-title">Acceso al sistema</div>
+        <form class="login-form" id="loginForm">
+            <label for="usuario">Usuario</label>
+            <input type="text" id="usuario" name="usuario" required autocomplete="username">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
+            <div class="login-error" id="loginError" style="display:none;"></div>
+            <button type="submit">Ingresar</button>
+        </form>
+        <div class="footer">
+            &copy; 2026 FONESCUJUD<br>Sistema de Gestión Financiera<br>Creaciones Manotas
+        </div>
+    </div>
+    <script src="login.js"></script>
+</body>
+
+</html>

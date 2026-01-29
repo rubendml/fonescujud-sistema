@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FONESCUJUD - Panel Revisor</title>
+  <link rel="stylesheet" href="../public/styles.css">
+  <link rel="stylesheet" href="../admin/admin-styles.css">
+  <link rel="stylesheet" href="revisor-styles.css">
+</head>
+
+<body class="admin-layout">
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar revisor-sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-badge">👁️</div>
+        <div>
+          <h3>FONESCUJUD</h3>
+          <p>Revisor</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="dashboard">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-section="usuarios">
+          <span class="icon">👥</span>
+          <span>Usuarios</span>
+        </a>
+        <a href="#" class="nav-item" data-section="cuotas">
+          <span class="icon">💰</span>
+          <span>Cuotas</span>
+        </a>
+        <a href="#" class="nav-item" data-section="creditos">
+          <span class="icon">💳</span>
+          <span>Créditos</span>
+        </a>
+        <a href="#" class="nav-item" data-section="multas">
+          <span class="icon">⛔</span>
+          <span>Multas</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn">
+          <span class="icon">🚪</span>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Header -->
+      <header class="admin-header">
+        <div class="header-title">
+          <img src="../../img/logo.png" alt="Logo FONESCUJUD"
+            style="height:40px;vertical-align:middle;margin-right:10px;">
+          <h1 id="sectionTitle" style="display:inline-block;vertical-align:middle;">Dashboard</h1>
+          <p id="sectionSubtitle">Resumen del estado financiero</p>
+        </div>
+        <div class="header-user">
+          <span id="userName">Revisor</span>
+          <div class="user-avatar">R</div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="admin-content">
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="content-section active">
+          <div class="dashboard-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">💵</span>
+                <span class="stat-label">Ingresos Totales</span>
+              </div>
+              <div class="stat-value" id="dashIngresosTotales">$0</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">💰</span>
+                <span class="stat-label">Cuotas Recaudadas</span>
+              </div>
+              <div class="stat-value" id="dashCuotasTotal">$0</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">💳</span>
+                <span class="stat-label">Fondos en Préstamos</span>
+              </div>
+              <div class="stat-value" id="dashCreditos">$0</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-icon">⛔</span>
+                <span class="stat-label">Multas Pendientes</span>
+              </div>
+              <div class="stat-value warning" id="dashMultas">$0</div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <h2>Información Rápida</h2>
+            <div class="info-grid">
+              <div class="info-box">
+                <p class="label">Afiliados</p>
+                <p class="value" id="dashAfiliados">0</p>
+              </div>
+              <div class="info-box">
+                <p class="label">No Afiliados</p>
+                <p class="value" id="dashNoAfiliados">0</p>
+              </div>
+              <div class="info-box">
+                <p class="label">Créditos Activos</p>
+                <p class="value" id="dashCreditosActivos">0</p>
+              </div>
+              <div class="info-box">
+                <p class="label">Por Cobrar</p>
+                <p class="value" id="dashPorCobrar">$0</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Usuarios Section -->
+        <section id="usuarios-section" class="content-section">
+          <div class="section-toolbar">
+            <input type="text" class="search-input" id="usuariosSearch" placeholder="Buscar usuario...">
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Email</th>
+                <th>Afiliado</th>
+                <th>Cuota Mensual</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="usuariosTable">
+              <tr>
+                <td colspan="6" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Cuotas Section -->
+        <section id="cuotas-section" class="content-section">
+          <div class="section-toolbar">
+            <select id="cuotasFilter" class="filter-select">
+              <option value="">Todos los meses</option>
+              <option value="1">Enero</option>
+              <option value="2">Febrero</option>
+              <option value="3">Marzo</option>
+              <option value="4">Abril</option>
+              <option value="5">Mayo</option>
+              <option value="6">Junio</option>
+              <option value="7">Julio</option>
+              <option value="8">Agosto</option>
+              <option value="9">Septiembre</option>
+              <option value="10">Octubre</option>
+              <option value="11">Noviembre</option>
+              <option value="12">Diciembre</option>
+              <option value="13">Extraordinaria</option>
+            </select>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Mes</th>
+                <th>Año</th>
+                <th>Valor Pagado</th>
+                <th>Fecha de Pago</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="cuotasTable">
+              <tr>
+                <td colspan="6" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Créditos Section -->
+        <section id="creditos-section" class="content-section">
+          <div class="section-toolbar">
+            <select id="creditosFilter" class="filter-select">
+              <option value="">Todos los créditos</option>
+              <option value="activo">Activos</option>
+              <option value="pagado">Pagados</option>
+              <option value="en mora">En mora</option>
+            </select>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Monto Original</th>
+                <th>Saldo</th>
+                <th>Tasa Interés</th>
+                <th>Estado</th>
+                <th>Desembolso</th>
+              </tr>
+            </thead>
+            <tbody id="creditosTable">
+              <tr>
+                <td colspan="6" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Multas Section -->
+        <section id="multas-section" class="content-section">
+          <div class="section-toolbar">
+            <select id="multasFilter" class="filter-select">
+              <option value="">Todas las multas</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="pagada">Pagadas</option>
+            </select>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Motivo</th>
+                <th>Valor</th>
+                <th>Fecha Multa</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="multasTable">
+              <tr>
+                <td colspan="5" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Forms -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <footer class="footer"
+    style="width:100vw;position:fixed;bottom:0;left:0;background:#073042;color:#fff;padding:8px 0;text-align:center;font-size:1em;z-index:100;">
+    <span>&copy; 2026 FONESCUJUD - Fondo de Empleados. Todos los derechos reservados. | Sistema de Gestión Financiera |
+      Creaciones Manotas</span>
+  </footer>
+
+  <script src="revisor-script.js"></script>
+  <script src="auth.js"></script>
+</body>
+
+</html>

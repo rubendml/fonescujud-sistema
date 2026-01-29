@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FONESCUJUD - Dashboard Público</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo-section" style="display:flex;align-items:center;">
+          <img src="img/logo.png" alt="Logo FONESCUJUD" style="height:80px;margin-right:20px;">
+          <div class="logo-text">
+            <h1 style="margin:0;">FONESCUJUD</h1>
+            <p style="margin:0;">Ahorrar es crecer</p>
+          </div>
+        </div>
+        <div class="header-subtitle">
+          <p>Estado Financiero del Fondo de Empleados 2026</p>
+          <p class="last-update">Última actualización: <span id="lastUpdate"></span></p>
+          <div style="margin-top:10px;">
+            <a href="login.html"
+              style="background:#073042;color:#fff;padding:8px 18px;border-radius:6px;text-decoration:none;font-weight:bold;margin-right:10px;">Acceso
+              Admin / Revisor</a>
+            <a href="index.html"
+              style="background:#fff;color:#073042;padding:8px 18px;border-radius:6px;text-decoration:none;font-weight:bold;border:1px solid #073042;">Entrar
+              como público</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Cargando información...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorMessage" class="error-message" style="display: none;">
+      <p>Error al cargar los datos. Por favor, intente más tarde.</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent" style="display: none;">
+
+      <!-- Summary Cards -->
+      <section class="summary-cards">
+        <div class="card card-primary">
+          <div class="card-icon">👥</div>
+          <div class="card-content">
+            <p class="card-label">Afiliados</p>
+            <p class="card-value" id="totalAfiliados">0</p>
+            <p class="card-subtitle">del total de empleados</p>
+          </div>
+        </div>
+
+        <div class="card card-success">
+          <div class="card-icon">💰</div>
+          <div class="card-content">
+            <p class="card-label">Cuotas Recaudadas</p>
+            <p class="card-value" id="totalCuotas">$0</p>
+            <p class="card-subtitle">en pagos mensuales</p>
+          </div>
+        </div>
+
+        <div class="card card-info">
+          <div class="card-icon">💳</div>
+          <div class="card-content">
+            <p class="card-label">Créditos Desembolsados</p>
+            <p class="card-value" id="totalCreditos">$0</p>
+            <p class="card-subtitle">en préstamos activos</p>
+          </div>
+        </div>
+
+        <div class="card card-warning">
+          <div class="card-icon">⚠️</div>
+          <div class="card-content">
+            <p class="card-label">Por Cobrar</p>
+            <p class="card-value" id="totalPorCobrar">$0</p>
+            <p class="card-subtitle">incluyendo saldos e intereses</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Details Section -->
+      <section class="details-section">
+
+        <!-- Cuotas Detail -->
+        <div class="detail-card">
+          <h2>📊 Recaudo de Cuotas</h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Total Recaudado</span>
+              <span class="detail-value" id="cuotasTotal">$0</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Cantidad de Pagos</span>
+              <span class="detail-value" id="cuotasCantidad">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Créditos Detail -->
+        <div class="detail-card">
+          <h2>💳 Gestión de Créditos</h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Total Desembolsado</span>
+              <span class="detail-value" id="creditoTotal">$0</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Saldo Pendiente</span>
+              <span class="detail-value" id="creditoSaldo">$0</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Intereses Generados</span>
+              <span class="detail-value" id="creditoInteres">$0</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Créditos Activos</span>
+              <span class="detail-value" id="creditosActivos">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multas Detail -->
+        <div class="detail-card">
+          <h2>⛔ Registro de Multas</h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Total de Multas</span>
+              <span class="detail-value" id="multasTotal">$0</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Recaudadas</span>
+              <span class="detail-value success" id="multasRecaudadas">$0</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Pendientes</span>
+              <span class="detail-value warning" id="multasPendientes">$0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="detail-card full-width">
+          <h2>📈 Panorama Financiero General</h2>
+          <div class="financial-grid">
+            <div class="financial-item">
+              <div class="financial-header">Ingresos Totales</div>
+              <div class="financial-amount" id="ingresosTotal">$0</div>
+              <div class="financial-breakdown">
+                <p>Cuotas: <span id="ingresoCuotas">$0</span></p>
+                <p>Intereses: <span id="ingresoInteres">$0</span></p>
+                <p>Multas: <span id="ingresoMultas">$0</span></p>
+              </div>
+            </div>
+
+            <div class="financial-item">
+              <div class="financial-header">Fondos en Préstamos</div>
+              <div class="financial-amount" id="fondosPrestamos">$0</div>
+              <div class="financial-breakdown">
+                <p>Desembolsados</p>
+              </div>
+            </div>
+
+            <div class="financial-item">
+              <div class="financial-header">Por Cobrar</div>
+              <div class="financial-amount" id="porCobrarTotal">$0</div>
+              <div class="financial-breakdown">
+                <p>Saldos: <span id="porCobrarSaldos">$0</span></p>
+                <p>Multas: <span id="porCobrarMultas">$0</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Membership Info -->
+      <section class="info-section">
+        <h2>👥 Información de Afiliación</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <p class="info-label">Afiliados al Fondo</p>
+            <p class="info-value" id="afiliados">0</p>
+          </div>
+          <div class="info-card">
+            <p class="info-label">No Afiliados</p>
+            <p class="info-value" id="noAfiliados">0</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top:40px;text-align:center;font-weight:bold;font-size:1.1em;">
+      <p>&copy; 2026 FONESCUJUD - Fondo de Empleados. Todos los derechos reservados.</p>
+      <p>Sistema de Gestión Financiera</p>
+      <p>Creaciones Manotas</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

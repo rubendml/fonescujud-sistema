@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FONESCUJUD - Quick Start Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #003d5c 0%, #0d5e7e 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e0e6ed;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section h2 {
+            color: #003d5c;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #003d5c;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .step {
+            background: #f8fafb;
+            padding: 1rem;
+            border-left: 4px solid #003d5c;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        
+        .step h3 {
+            color: #003d5c;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step code {
+            display: block;
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .urls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .url-box {
+            background: linear-gradient(135deg, #003d5c 0%, #0d5e7e 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .url-box h4 {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .url-box a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            word-break: break-all;
+        }
+        
+        .url-box a:hover {
+            text-decoration: underline;
+        }
+        
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist li {
+            padding: 0.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: #003d5c;
+            font-weight: bold;
+        }
+        
+        .checklist li.done:before {
+            content: "☑";
+            color: #27ae60;
+        }
+        
+        .attention {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .attention strong {
+            color: #856404;
+        }
+        
+        .footer {
+            background: #f8fafb;
+            padding: 2rem;
+            text-align: center;
+            color: #7f8c8d;
+            border-top: 1px solid #e0e6ed;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .urls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 FONESCUJUD</h1>
+            <p>Sistema de Gestión del Fondo de Empleados 2026</p>
+            <p style="font-size: 1rem; margin-top: 0.5rem;">Guía de Inicio Rápido</p>
+        </div>
+        
+        <div class="content">
+            
+            <div class="section">
+                <h2><span class="section-number">1</span>Preparar Supabase</h2>
+                <div class="step">
+                    <h3>Crear Proyecto en Supabase</h3>
+                    <p>Visita <strong>https://supabase.com</strong> y crea una cuenta:</p>
+                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Click en "New project"</li>
+                        <li>Proporciona nombre y contraseña</li>
+                        <li>Selecciona región (ej: South America - São Paulo)</li>
+                        <li>Espera a que se cree el proyecto (2-3 minutos)</li>
+                    </ol>
+                </div>
+                
+                <div class="step">
+                    <h3>Copiar Credenciales</h3>
+                    <p>En el dashboard, ve a <strong>Project Settings → API</strong> y copia:</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><code style="display: inline; background: none; padding: 0;">Project URL</code> → SUPABASE_URL</li>
+                        <li><code style="display: inline; background: none; padding: 0;">anon public</code> → SUPABASE_KEY</li>
+                        <li><code style="display: inline; background: none; padding: 0;">service_role</code> → SUPABASE_SERVICE_ROLE_KEY</li>
+                    </ul>
+                </div>
+                
+                <div class="step">
+                    <h3>Crear Tablas</h3>
+                    <p>En Supabase, ve a <strong>SQL Editor</strong>:</p>
+                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Click en "New Query"</li>
+                        <li>Copia el contenido de <code style="display: inline; background: none; padding: 0;">database/schema.sql</code></li>
+                        <li>Pega en el editor</li>
+                        <li>Click en "Run"</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="section-number">2</span>Configurar Backend</h2>
+                <div class="step">
+                    <h3>Crear archivo .env</h3>
+                    <code>cd backend
+cp .env.example .env</code>
+                </div>
+                
+                <div class="step">
+                    <h3>Completar .env con credenciales</h3>
+                    <code>SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_KEY=tu_anon_key_aqui
+SUPABASE_SERVICE_ROLE_KEY=tu_service_key_aqui
+JWT_SECRET=genera_una_contraseña_fuerte_aqui
+PORT=3000
+NODE_ENV=development</code>
+                </div>
+                
+                <div class="step">
+                    <h3>Instalar e iniciar</h3>
+                    <code>npm install
+npm run dev</code>
+                    <p style="margin-top: 0.5rem; color: #27ae60;">✓ Debe mostrar: "FONESCUJUD - Sistema de Fondo Backend Running"</p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="section-number">3</span>Levantar Frontend</h2>
+                <div class="step">
+                    <h3>Opción A: Con Python</h3>
+                    <code>cd frontend
+python -m http.server 8000</code>
+                </div>
+                
+                <div class="step">
+                    <h3>Opción B: Con http-server</h3>
+                    <code>npm install -g http-server
+http-server frontend/ -p 8000</code>
+                </div>
+                
+                <div class="attention">
+                    <strong>⚠️ Importante:</strong> Backend en puerto 3000, Frontend en puerto 8000
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="section-number">4</span>Acceder a las Aplicaciones</h2>
+                <div class="urls">
+                    <div class="url-box">
+                        <h4>📊 Dashboard Público</h4>
+                        <a href="http://localhost:8000/public/" target="_blank">
+                            http://localhost:8000/public/
+                        </a>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">Solo lectura, acceso público</p>
+                    </div>
+                    
+                    <div class="url-box">
+                        <h4>👨‍💼 Panel Administrador</h4>
+                        <a href="http://localhost:8000/admin/" target="_blank">
+                            http://localhost:8000/admin/
+                        </a>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">Acceso total, requiere login</p>
+                    </div>
+                    
+                    <div class="url-box">
+                        <h4>👁️ Panel Revisor</h4>
+                        <a href="http://localhost:8000/revisor/" target="_blank">
+                            http://localhost:8000/revisor/
+                        </a>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">Solo lectura, requiere login</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="section-number">5</span>Cargar Datos de Prueba</h2>
+                <div class="step">
+                    <h3>Ejecutar Script SQL</h3>
+                    <p>En Supabase SQL Editor:</p>
+                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Crear nueva query</li>
+                        <li>Copiar <code style="display: inline; background: none; padding: 0;">database/data-sample.sql</code></li>
+                        <li>Click en "Run"</li>
+                    </ol>
+                </div>
+                
+                <div class="step">
+                    <h3>Datos Cargados</h3>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>10 usuarios (7 afiliados, 3 no afiliados)</li>
+                        <li>8 cuotas de enero 2026</li>
+                        <li>5 créditos activos</li>
+                        <li>4 multas (2 pagadas, 2 pendientes)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="section-number">6</span>Verificar que Funciona</h2>
+                <div class="step">
+                    <h3>Checklist</h3>
+                    <ul class="checklist">
+                        <li>Backend corriendo en puerto 3000</li>
+                        <li>Frontend disponible en puerto 8000</li>
+                        <li>Dashboard público muestra datos</li>
+                        <li>Health check: http://localhost:3000/health</li>
+                        <li>API usuarios: http://localhost:3000/api/usuarios</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2><span class="section-number">7</span>Próximos Pasos</h2>
+                <div class="step">
+                    <h3>Para Desarrollo</h3>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Implementar autenticación Supabase Auth</li>
+                        <li>Completar funcionalidades CRUD en admin</li>
+                        <li>Agregar validaciones en formularios</li>
+                        <li>Crear reportes descargables</li>
+                        <li>Configurar CI/CD en GitHub Actions</li>
+                    </ul>
+                </div>
+                
+                <div class="step">
+                    <h3>Para Producción</h3>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Obtener certificado SSL</li>
+                        <li>Configurar dominio personalizado</li>
+                        <li>Habilitar backups automáticos</li>
+                        <li>Configurar monitoreo y alertas</li>
+                        <li>Establecer plan de escalado</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="attention">
+                <strong>📞 Problemas?</strong>
+                <p style="margin-top: 0.5rem;">
+                    1. Verificar que los puertos 3000 y 8000 están libres<br>
+                    2. Confirmar credenciales de Supabase en .env<br>
+                    3. Revisar console del navegador (F12) para errores<br>
+                    4. Ver documentación en README.md e INSTALACION.md
+                </p>
+            </div>
+            
+        </div>
+        
+        <div class="footer">
+            <p><strong>FONESCUJUD - Sistema de Gestión 2026</strong></p>
+            <p>Ahorrar es crecer</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">Documentación completa disponible en README.md</p>
+        </div>
+    </div>
+</body>
+</html>
