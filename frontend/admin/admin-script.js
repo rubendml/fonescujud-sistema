@@ -775,8 +775,7 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
     monto_solicitado: monto,
     plazo_meses: plazo,
     porcentaje_interes: interes,
-    fecha_desembolso: fecha,
-    estado: estado
+    fecha_desembolso: fecha
   };
 
   console.log('Enviando crédito:', formData);
@@ -787,6 +786,9 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
       body: JSON.stringify(formData)
     });
 
+    const responseData = await response.json();
+    console.log('Respuesta del servidor:', responseData, 'Status:', response.status);
+
     if (response.ok) {
       showToast('Crédito registrado correctamente', 'success');
       closeModal('creditoModal');
@@ -794,14 +796,13 @@ document.getElementById('creditoForm')?.addEventListener('submit', async (e) => 
       document.getElementById('creditoForm').reset();
       fetchCreditos();
     } else {
-      const error = await response.json();
-      console.error('Error del servidor:', error);
-      showToast('Error: ' + (error.error || 'Error al guardar crédito'), 'error');
+      console.error('Error del servidor:', responseData);
+      showToast('Error: ' + (responseData.error || 'Error al guardar crédito'), 'error');
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error de red:', error);
     if (error.message !== 'Unauthorized') {
-      showToast('Error al guardar crédito', 'error');
+      showToast('Error al guardar crédito: ' + error.message, 'error');
     }
   }
 });
