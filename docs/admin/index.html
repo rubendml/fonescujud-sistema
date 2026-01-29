@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FONESCUJUD - Panel Administrador</title>
+  <link rel="stylesheet" href="../public/styles.css">
+  <link rel="stylesheet" href="admin-styles.css">
+</head>
+
+<body class="admin-layout">
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-badge">$</div>
+        <div>
+          <h3>FONESCUJUD</h3>
+          <p>Admin</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="dashboard">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-section="usuarios">
+          <span class="icon">👥</span>
+          <span>Usuarios</span>
+        </a>
+        <a href="#" class="nav-item" data-section="cuotas">
+          <span class="icon">💰</span>
+          <span>Cuotas</span>
+        </a>
+        <a href="#" class="nav-item" data-section="creditos">
+          <span class="icon">💳</span>
+          <span>Créditos</span>
+        </a>
+        <a href="#" class="nav-item" data-section="movimientos">
+          <span class="icon">📋</span>
+          <span>Movimientos</span>
+        </a>
+        <a href="#" class="nav-item" data-section="multas">
+          <span class="icon">⛔</span>
+          <span>Multas</span>
+        </a>
+        <a href="#" class="nav-item" data-section="reportes">
+          <span class="icon">📈</span>
+          <span>Reportes</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn">
+          <span class="icon">🚪</span>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Header -->
+      <header class="admin-header">
+        <div class="header-title">
+          <img src="../../img/logo.png" alt="Logo FONESCUJUD"
+            style="height:40px;vertical-align:middle;margin-right:10px;">
+          <h1 id="sectionTitle" style="display:inline-block;vertical-align:middle;">Dashboard</h1>
+          <p id="sectionSubtitle">Resumen del estado financiero</p>
+        </div>
+        <div class="header-user">
+          <span id="userName">Administrador</span>
+          <div class="user-avatar">A</div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="admin-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="content-section active">
+          <!-- Copiado y adaptado del dashboard público -->
+          <section class="summary-cards">
+            <div class="card card-primary">
+              <div class="card-icon">👥</div>
+              <div class="card-content">
+                <p class="card-label">Afiliados</p>
+                <p class="card-value" id="totalAfiliados">0</p>
+                <p class="card-subtitle">del total de empleados</p>
+              </div>
+            </div>
+            <div class="card card-success">
+              <div class="card-icon">💰</div>
+              <div class="card-content">
+                <p class="card-label">Cuotas Recaudadas</p>
+                <p class="card-value" id="totalCuotas">$0</p>
+                <p class="card-subtitle">en pagos mensuales</p>
+              </div>
+            </div>
+            <div class="card card-info">
+              <div class="card-icon">💳</div>
+              <div class="card-content">
+                <p class="card-label">Créditos Desembolsados</p>
+                <p class="card-value" id="totalCreditos">$0</p>
+                <p class="card-subtitle">en préstamos activos</p>
+              </div>
+            </div>
+            <div class="card card-warning">
+              <div class="card-icon">⚠️</div>
+              <div class="card-content">
+                <p class="card-label">Por Cobrar</p>
+                <p class="card-value" id="totalPorCobrar">$0</p>
+                <p class="card-subtitle">incluyendo saldos e intereses</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="details-section">
+            <div class="detail-card">
+              <h2>📊 Recaudo de Cuotas</h2>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Total Recaudado</span>
+                  <span class="detail-value" id="cuotasTotal">$0</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Cantidad de Pagos</span>
+                  <span class="detail-value" id="cuotasCantidad">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h2>💳 Gestión de Créditos</h2>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Total Desembolsado</span>
+                  <span class="detail-value" id="creditoTotal">$0</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Saldo Pendiente</span>
+                  <span class="detail-value" id="creditoSaldo">$0</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Intereses Generados</span>
+                  <span class="detail-value" id="creditoInteres">$0</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Créditos Activos</span>
+                  <span class="detail-value" id="creditosActivos">0</span>
+                </div>
+              </div>
+            </div>
+            <div class="detail-card">
+              <h2>⛔ Registro de Multas</h2>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Total de Multas</span>
+                  <span class="detail-value" id="multasTotal">$0</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Recaudadas</span>
+                  <span class="detail-value success" id="multasRecaudadas">$0</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Pendientes</span>
+                  <span class="detail-value warning" id="multasPendientes">$0</span>
+                </div>
+              </div>
+            </div>
+            <div class="detail-card full-width">
+              <h2>📈 Panorama Financiero General</h2>
+              <div class="financial-grid">
+                <div class="financial-item">
+                  <div class="financial-header">Ingresos Totales</div>
+                  <div class="financial-amount" id="ingresosTotal">$0</div>
+                  <div class="financial-breakdown">
+                    <p>Cuotas: <span id="ingresoCuotas">$0</span></p>
+                    <p>Intereses: <span id="ingresoInteres">$0</span></p>
+                    <p>Multas: <span id="ingresoMultas">$0</span></p>
+                  </div>
+                </div>
+                <div class="financial-item">
+                  <div class="financial-header">Fondos en Préstamos</div>
+                  <div class="financial-amount" id="fondosPrestamos">$0</div>
+                  <div class="financial-breakdown">
+                    <p>Desembolsados</p>
+                  </div>
+                </div>
+                <div class="financial-item">
+                  <div class="financial-header">Por Cobrar</div>
+                  <div class="financial-amount" id="porCobrarTotal">$0</div>
+                  <div class="financial-breakdown">
+                    <p>Saldos: <span id="porCobrarSaldos">$0</span></p>
+                    <p>Multas: <span id="porCobrarMultas">$0</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="info-section">
+            <h2>👥 Información de Afiliación</h2>
+            <div class="info-grid">
+              <div class="info-card">
+                <p class="info-label">Afiliados al Fondo</p>
+                <p class="info-value" id="afiliados">0</p>
+              </div>
+              <div class="info-card">
+                <p class="info-label">No Afiliados</p>
+                <p class="info-value" id="noAfiliados">0</p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- Usuarios Section -->
+        <section id="usuarios-section" class="content-section">
+          <div class="section-toolbar">
+            <button class="btn btn-primary" id="btnNuevoUsuario">
+              <span>➕</span> Nuevo Usuario
+            </button>
+            <input type="text" class="search-input" id="usuariosSearch" placeholder="Buscar usuario...">
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Email</th>
+                <th>Afiliado</th>
+                <th>Cuota Mensual</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usuariosTable">
+              <tr>
+                <td colspan="6" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Cuotas Section -->
+        <section id="cuotas-section" class="content-section">
+          <div class="section-toolbar">
+            <button class="btn btn-primary" id="btnNuevaCuota">
+              <span>➕</span> Registrar Cuota
+            </button>
+            <select id="cuotasFilter" class="filter-select">
+              <option value="">Todos los meses</option>
+              <option value="1">Enero</option>
+              <option value="2">Febrero</option>
+              <option value="3">Marzo</option>
+              <option value="4">Abril</option>
+              <option value="5">Mayo</option>
+              <option value="6">Junio</option>
+              <option value="7">Julio</option>
+              <option value="8">Agosto</option>
+              <option value="9">Septiembre</option>
+              <option value="10">Octubre</option>
+              <option value="11">Noviembre</option>
+              <option value="12">Diciembre</option>
+              <option value="13">Extraordinaria</option>
+            </select>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Mes</th>
+                <th>Año</th>
+                <th>Valor Pagado</th>
+                <th>Fecha de Pago</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cuotasTable">
+              <tr>
+                <td colspan="7" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Créditos Section -->
+        <section id="creditos-section" class="content-section">
+          <div class="section-toolbar">
+            <button class="btn btn-primary" id="btnNuevoCredito">
+              <span>➕</span> Nuevo Crédito
+            </button>
+            <select id="creditosFilter" class="filter-select">
+              <option value="">Todos los créditos</option>
+              <option value="activo">Activos</option>
+              <option value="pagado">Pagados</option>
+              <option value="en mora">En mora</option>
+            </select>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Monto Original</th>
+                <th>Saldo</th>
+                <th>Tasa Interés</th>
+                <th>Estado</th>
+                <th>Desembolso</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="creditosTable">
+              <tr>
+                <td colspan="7" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Multas Section -->
+        <section id="multas-section" class="content-section">
+          <div class="section-toolbar">
+            <button class="btn btn-primary" id="btnNuevaMulta">
+              <span>➕</span> Registrar Multa
+            </button>
+            <select id="multasFilter" class="filter-select">
+              <option value="">Todas las multas</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="pagada">Pagadas</option>
+            </select>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Motivo</th>
+                <th>Valor</th>
+                <th>Fecha Multa</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="multasTable">
+              <tr>
+                <td colspan="6" class="text-center text-muted">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Movimientos Section -->
+        <section id="movimientos-section" class="content-section">
+          <div class="section-toolbar">
+            <div class="toolbar-left">
+              <select id="movimientosFilter" class="form-control">
+                <option value="">Todos los movimientos</option>
+                <option value="desembolso">Desembolsos</option>
+                <option value="abono">Abonos</option>
+                <option value="interes">Intereses</option>
+              </select>
+            </div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>CRÉDITO ID</th>
+                <th>USUARIO</th>
+                <th>TIPO</th>
+                <th>MONTO</th>
+                <th>FECHA</th>
+                <th>DESCRIPCIÓN</th>
+              </tr>
+            </thead>
+            <tbody id="movimientosTable">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 20px; color: #999;">Cargando movimientos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Reportes Section -->
+        <section id="reportes-section" class="content-section">
+          <div class="reportes-summary">
+            <div class="resumen-card">
+              <h4>Resumen de Créditos</h4>
+              <div class="resumen-grid">
+                <div class="resumen-item">
+                  <label>Total Desembolsado</label>
+                  <div class="resumen-value" id="reportTotalDesembolsado">$0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Saldo Pendiente</label>
+                  <div class="resumen-value" id="reportSaldoPendiente">$0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Interés Acumulado</label>
+                  <div class="resumen-value" id="reportInteresAcumulado">$0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Créditos Activos</label>
+                  <div class="resumen-value" id="reportCreditosActivos">0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Créditos Pagados</label>
+                  <div class="resumen-value" id="reportCreditosPagados">0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Total de Créditos</label>
+                  <div class="resumen-value" id="reportTotalCreditos">0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="resumen-card">
+              <h4>Resumen de Movimientos</h4>
+              <div class="resumen-grid">
+                <div class="resumen-item">
+                  <label>Total Desembolsos</label>
+                  <div class="resumen-value" id="reportTotalDesembolsos">0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Total Abonos</label>
+                  <div class="resumen-value" id="reportTotalAbonos">$0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Total Intereses</label>
+                  <div class="resumen-value" id="reportTotalIntereses">0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Monto Desembolsado</label>
+                  <div class="resumen-value" id="reportMontoDesembolsado">$0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Monto Abonado</label>
+                  <div class="resumen-value" id="reportMontoAbonado">$0</div>
+                </div>
+                <div class="resumen-item">
+                  <label>Monto Interés</label>
+                  <div class="resumen-value" id="reportMontoInteres">$0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reportes-grid">
+            <div class="reporte-card">
+              <h3>Reporte de Cuotas por Mes</h3>
+              <p>Descargar análisis detallado de cuotas recaudadas por mes.</p>
+              <button class="btn btn-outline">Generar Reporte</button>
+            </div>
+
+            <div class="reporte-card">
+              <h3>Reporte de Créditos</h3>
+              <p>Estado actual de todos los créditos y movimientos.</p>
+              <button class="btn btn-outline">Generar Reporte</button>
+            </div>
+
+            <div class="reporte-card">
+              <h3>Reporte de Multas</h3>
+              <p>Multas pendientes y cobradas.</p>
+              <button class="btn btn-outline">Generar Reporte</button>
+            </div>
+
+            <div class="reporte-card">
+              <h3>Reporte Financiero</h3>
+              <p>Resumen financiero completo del fondo.</p>
+              <button class="btn btn-outline">Generar Reporte</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals for Forms -->
+
+  <!-- Usuario Modal -->
+  <div id="usuarioModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <h2>Nuevo Usuario</h2>
+      <form id="usuarioForm">
+        <div class="form-group">
+          <label for="usuarioNombre">Nombre</label>
+          <input type="text" id="usuarioNombre" required>
+        </div>
+        <div class="form-group">
+          <label for="usuarioCedula">Cédula</label>
+          <input type="text" id="usuarioCedula" required>
+        </div>
+        <div class="form-group">
+          <label for="usuarioEmail">Email</label>
+          <input type="email" id="usuarioEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="usuarioAfiliado">¿Afiliado?</label>
+          <select id="usuarioAfiliado">
+            <option value="1">Sí</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="usuarioCuota">Valor Cuota</label>
+          <input type="number" id="usuarioCuota" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Cuota Modal -->
+  <div id="cuotaModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <h2>Registrar Cuota</h2>
+      <form id="cuotaForm">
+        <div class="form-group">
+          <label for="cuotaUsuario">Usuario</label>
+          <select id="cuotaUsuario" required>
+            <option value="">Seleccionar usuario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cuotaMes">Mes</label>
+          <select id="cuotaMes" required>
+            <option value="">Seleccionar mes</option>
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cuotaAnio">Año</label>
+          <input type="number" id="cuotaAnio" value="2026" required>
+        </div>
+        <div class="form-group"> <label for="cuotaValor">Valor Pagado</label>
+          <input type="number" id="cuotaValor" required>
+        </div>
+        <div class="form-group">
+          <label for="cuotaFecha">Fecha Pago</label>
+          <input type="date" id="cuotaFecha" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Crédito Modal -->
+  <div id="creditoModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <h2>Solicitar Nuevo Crédito</h2>
+      <form id="creditoForm">
+        <div class="form-group">
+          <label for="creditoUsuario">Usuario Solicitante</label>
+          <select id="creditoUsuario" required>
+            <option value="">Seleccionar usuario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="creditoMonto">Monto del Préstamo</label>
+          <input type="number" id="creditoMonto" placeholder="0" required>
+        </div>
+        <div class="form-group">
+          <label for="creditoPlazo">Plazo (meses)</label>
+          <input type="number" id="creditoPlazo" placeholder="Ej: 12" required>
+        </div>
+        <div class="form-group">
+          <label for="creditoInteres">Porcentaje de Interés</label>
+          <select id="creditoInteres" required>
+            <option value="">Seleccionar tasa</option>
+            <option value="3">3% - Para afiliados</option>
+            <option value="5">5% - Para no afiliados</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="creditoFecha">Fecha de Desembolso</label>
+          <input type="date" id="creditoFecha" required>
+        </div>
+        <p style="font-size: 0.9rem; color: #666; margin: 1rem 0;">
+          <strong>Estado:</strong> Se registrará automáticamente como Activo
+        </p>
+        <div class="form-group">
+          <label for="creditoEstado">Estado</label>
+          <select id="creditoEstado">
+            <option value="activo">Activo</option>
+            <option value="pagado">Pagado</option>
+            <option value="en mora">En mora</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Multa Modal -->
+  <div id="multaModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <h2>Nueva Multa</h2>
+      <form id="multaForm">
+        <div class="form-group">
+          <label for="multaUsuario">Usuario</label>
+          <select id="multaUsuario" required>
+            <option value="">Seleccionar usuario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="multaMotivo">Motivo</label>
+          <input type="text" id="multaMotivo" required>
+        </div>
+        <div class="form-group">
+          <label for="multaValor">Valor</label>
+          <input type="number" id="multaValor" required>
+        </div>
+        <div class="form-group">
+          <label for="multaFecha">Fecha Multa</label>
+          <input type="date" id="multaFecha" required>
+        </div>
+        <div class="form-group">
+          <label for="multaEstado">Estado</label>
+          <select id="multaEstado">
+            <option value="pendiente">Pendiente</option>
+            <option value="pagada">Pagada</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer"
+    style="width:100vw;position:fixed;bottom:0;left:0;background:#073042;color:#fff;padding:8px 0;text-align:center;font-size:1em;z-index:100;">
+    <span>&copy; 2026 FONESCUJUD - Fondo de Empleados. Todos los derechos reservados. | Sistema de Gestión Financiera |
+      Creaciones Manotas</span>
+  </footer>
+
+  <script src="admin-script.js"></script>
+  <script src="auth.js"></script>
+</body>
+
+</html>
