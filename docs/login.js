@@ -2,9 +2,6 @@
 const loginForm = document.getElementById('loginForm');
 const loginError = document.getElementById('loginError');
 
-// Detectar ruta base según dónde está corriendo
-const basePath = window.location.hostname.includes('github.io') ? '/fonescujud-sistema' : '';
-
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginError.style.display = 'none';
@@ -23,9 +20,9 @@ loginForm.addEventListener('submit', async (e) => {
             localStorage.setItem('rol', data.rol);
             // Redirigir según el rol
             if (data.rol === 'admin') {
-                window.location.href = basePath + '/admin/';
+                window.location.href = './admin/';
             } else if (data.rol === 'revisor') {
-                window.location.href = basePath + '/revisor/';
+                window.location.href = './revisor/';
             } else {
                 loginError.textContent = 'Rol no autorizado.';
                 loginError.style.display = 'block';
