@@ -154,7 +154,7 @@ const updateDashboard = (data) => {
   // Créditos detail
   const creditoTotal = document.getElementById('creditoTotal');
   const creditoSaldo = document.getElementById('creditoSaldo');
-  const creditoInteres = document.getElementById('creditoInteres');
+  const creditoInteres = document.getElementById('creditoInteresDetalle');
   const creditosActivos = document.getElementById('creditosActivos');
   if (creditoTotal) creditoTotal.textContent = formatCurrency(totales.creditos || 0);
   if (creditoSaldo) creditoSaldo.textContent = formatCurrency(resumen?.saldo_pendiente || 0);
