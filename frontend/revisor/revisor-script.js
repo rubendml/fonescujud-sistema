@@ -119,9 +119,6 @@ const fetchUsuarios = async () => {
   }
 };
 
-// Cache para filtrado de usuarios
-let usuariosCache = [];
-
 const displayUsuarios = (usuarios, filter = '') => {
   const tbody = document.querySelector('#usuariosTable');
   if (!tbody) return;
