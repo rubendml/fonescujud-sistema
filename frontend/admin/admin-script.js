@@ -384,6 +384,7 @@ const displayCreditos = (creditos) => {
         <td>${c.porcentaje_interes}%</td>
         <td><span class="badge ${c.estado === 'activo' ? 'badge-success' : 'badge-danger'}">${c.estado}</span></td>
         <td>
+          <button class="btn-small btn-primary" onclick="verDetalleCredito(${c.id})">📋 Detalle</button>
           <button class="btn-small btn-info" onclick="abonarCredito(${c.id})">Abonar</button>
           <button class="btn-small btn-warning" onclick="registrarInteres(${c.id})">Intereses</button>
           <button class="btn-small btn-success" onclick="finalizarCredito(${c.id})">Finalizar</button>
@@ -496,6 +497,39 @@ const editCredito = (id) => {
   currentEditingId = id;
   currentEditingType = 'credito';
   openModal('creditoModal');
+};
+
+// Ver detalle completo de un crédito desde la tabla
+const verDetalleCredito = async (creditoId) => {
+  try {
+    // Buscar el crédito en el cache
+    const credito = creditosCache.find(c => c.id === creditoId);
+    if (!credito) {
+      showToast('Crédito no encontrado', 'error');
+      return;
+    }
+
+    const usuario = {
+      nombre: credito.usuarios?.nombre || 'Usuario',
+      cedula: credito.usuarios?.cedula || 'N/A',
+      email: credito.usuarios?.email || 'N/A',
+      telefono: credito.usuarios?.telefono || 'N/A'
+    };
+
+    // Obtener movimientos del crédito
+    let movimientos = [];
+    try {
+      const movimientosResponse = await authFetch(`${API_BASE_URL}/movimientos/credito/${creditoId}`);
+      movimientos = movimientosResponse.ok ? await movimientosResponse.json() : [];
+    } catch (movError) {
+      console.warn('No se pudieron cargar movimientos:', movError.message);
+    }
+
+    mostrarDetalleCreditoModal(credito, usuario, movimientos);
+  } catch (error) {
+    console.error('Error al ver detalle del crédito:', error);
+    showToast('Error al cargar detalle del crédito: ' + error.message, 'error');
+  }
 };
 
 // Búsqueda de Crédito por Cédula
