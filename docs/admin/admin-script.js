@@ -766,8 +766,15 @@ const mostrarDetalleCreditoModal = (credito, usuario, movimientos) => {
   document.getElementById('creditoDetallePlazo').textContent = credito.plazo_meses;
   document.getElementById('creditoDetalleTasa').textContent = credito.porcentaje_interes;
   document.getElementById('creditoDetalleEstado').innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
+  const interesCobradoMov = (movimientos || [])
+    .filter(m => m.tipo_movimiento === 'interes')
+    .reduce((sum, m) => sum + (parseFloat(m.monto) || 0), 0);
+  const interesCobrado = (credito.interes_cobrado && credito.interes_cobrado > 0)
+    ? credito.interes_cobrado
+    : interesCobradoMov;
+
   document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(credito.interes_acumulado || 0);
-  document.getElementById('creditoDetalleInteresCobrado').textContent = formatCurrency(credito.interes_cobrado || 0);
+  document.getElementById('creditoDetalleInteresCobrado').textContent = formatCurrency(interesCobrado || 0);
 
   // Cálculos financieros
   const montoOriginal = parseFloat(credito.monto_original);

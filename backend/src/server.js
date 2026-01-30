@@ -42,8 +42,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-// Forzar cabeceras CORS en todas las respuestas y manejar preflight explícito
-app.use((req, res, next) => {
+const setCorsHeaders = (req, res) => {
   const origin = req.headers.origin;
   if (origin && isAllowedOrigin(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
@@ -52,6 +51,16 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   }
   res.header('Vary', 'Origin');
+};
+
+app.options('/api/*', (req, res) => {
+  setCorsHeaders(req, res);
+  return res.sendStatus(200);
+});
+
+// Forzar cabeceras CORS en todas las respuestas y manejar preflight explícito
+app.use((req, res, next) => {
+  setCorsHeaders(req, res);
 
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
