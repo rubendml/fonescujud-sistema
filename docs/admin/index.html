@@ -288,6 +288,10 @@
             <button class="btn btn-primary" id="btnNuevoCredito">
               <span>➕</span> Nuevo Crédito
             </button>
+            <input type="text" class="search-input" id="creditosBuscarCedula" placeholder="Buscar crédito por cédula...">
+            <button class="btn btn-info" id="btnBuscarCredito" style="margin-left: 10px;">
+              <span>🔍</span> Buscar
+            </button>
             <select id="creditosFilter" class="filter-select">
               <option value="">Todos los créditos</option>
               <option value="activo">Activos</option>
@@ -546,6 +550,115 @@
         </div>
         <button type="submit" class="btn btn-primary">Guardar</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal Detalle de Crédito -->
+  <div id="creditoDetalleModal" class="modal">
+    <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close">&times;</button>
+      <h2 id="creditoDetalleTitulo">Detalle del Crédito</h2>
+      
+      <div id="creditoDetalleContenido">
+        <!-- Información del Usuario -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #094a5e;">👤 Información del Solicitante</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <div>
+              <strong>Nombre:</strong> <span id="creditoDetalleNombre"></span>
+            </div>
+            <div>
+              <strong>Cédula:</strong> <span id="creditoDetalleCedula"></span>
+            </div>
+            <div>
+              <strong>Email:</strong> <span id="creditoDetalleEmail"></span>
+            </div>
+            <div>
+              <strong>Teléfono:</strong> <span id="creditoDetalleTelefono"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información del Crédito -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #094a5e;">💳 Información del Crédito</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <div>
+              <strong>Monto Desembolsado:</strong> <span id="creditoDetalleMonto" style="color: #27ae60; font-weight: bold;"></span>
+            </div>
+            <div>
+              <strong>Saldo Actual:</strong> <span id="creditoDetalleSaldo" style="color: #e74c3c; font-weight: bold;"></span>
+            </div>
+            <div>
+              <strong>Fecha de Desembolso:</strong> <span id="creditoDetalleFechaDesembolso"></span>
+            </div>
+            <div>
+              <strong>Plazo Original:</strong> <span id="creditoDetallePlazo"></span> meses
+            </div>
+            <div>
+              <strong>Tasa de Interés:</strong> <span id="creditoDetalleTasa"></span>%
+            </div>
+            <div>
+              <strong>Estado:</strong> <span id="creditoDetalleEstado"></span>
+            </div>
+            <div>
+              <strong>Interés Acumulado:</strong> <span id="creditoDetalleInteresAcum" style="color: #f39c12;"></span>
+            </div>
+            <div>
+              <strong>Interés Cobrado:</strong> <span id="creditoDetalleInteresCobrado" style="color: #f39c12;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen Financiero -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #094a5e;">📊 Resumen Financiero</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <div>
+              <strong>Total Adeudado:</strong> <span id="creditoDetalleTotalAdeudado" style="color: #e74c3c; font-weight: bold; font-size: 1.2em;"></span>
+            </div>
+            <div>
+              <strong>Saldo por Pagar:</strong> <span id="creditoDetalleSaldoPorPagar" style="color: #e74c3c; font-weight: bold; font-size: 1.2em;"></span>
+            </div>
+            <div>
+              <strong>Total Pagado:</strong> <span id="creditoDetalleTotalPagado" style="color: #27ae60; font-weight: bold;"></span>
+            </div>
+            <div>
+              <strong>Meses Restantes:</strong> <span id="creditoDetalleMesesRestantes" style="color: #3498db; font-weight: bold; font-size: 1.2em;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Movimientos -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #094a5e;">📋 Movimientos del Crédito</h3>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+              <thead>
+                <tr style="background-color: #094a5e; color: white;">
+                  <th style="padding: 10px; text-align: left; border-bottom: 2px solid #094a5e;">Fecha</th>
+                  <th style="padding: 10px; text-align: left; border-bottom: 2px solid #094a5e;">Tipo</th>
+                  <th style="padding: 10px; text-align: right; border-bottom: 2px solid #094a5e;">Monto</th>
+                  <th style="padding: 10px; text-align: right; border-bottom: 2px solid #094a5e;">Saldo Anterior</th>
+                  <th style="padding: 10px; text-align: right; border-bottom: 2px solid #094a5e;">Saldo Posterior</th>
+                  <th style="padding: 10px; text-align: left; border-bottom: 2px solid #094a5e;">Descripción</th>
+                </tr>
+              </thead>
+              <tbody id="creditoDetalleMovimientos">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 15px; color: #999;">Cargando movimientos...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: right; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="document.getElementById('creditoDetalleModal').style.display='none';">
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 
