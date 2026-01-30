@@ -675,24 +675,7 @@ const verDetalleCredito = async (creditoId) => {
     };
 
     // Obtener movimientos del crédito
-    let movimientos = [];
-    try {
-      console.log('Buscando movimientos para crédito:', creditoId);
-      const url = `${API_BASE_URL}/movimientos/credito/${creditoId}`;
-      console.log('URL de movimientos:', url);
-      const movimientosResponse = await authFetch(url);
-      console.log('Respuesta de movimientos:', movimientosResponse.status, movimientosResponse.statusText);
-      if (movimientosResponse.ok) {
-        movimientos = await movimientosResponse.json();
-        console.log('Movimientos cargados:', movimientos);
-      } else {
-        console.warn('Error en respuesta de movimientos:', movimientosResponse.status);
-      }
-    } catch (movError) {
-      console.error('Error al cargar movimientos:', movError);
-    }
-
-    mostrarDetalleCreditoModal(credito, usuario, movimientos);
+    mostrarDetalleCreditoModal(credito, usuario);
   } catch (error) {
     console.error('Error al ver detalle del crédito:', error);
     showToast('Error al cargar detalle del crédito: ' + error.message, 'error');
@@ -728,31 +711,14 @@ const buscarCreditoPorCedula = async (cedula) => {
       telefono: creditoSeleccionado.usuarios?.telefono || 'N/A'
     };
 
-    let movimientos = [];
-    try {
-      console.log('Buscando movimientos para crédito:', creditoSeleccionado.id);
-      const url = `${API_BASE_URL}/movimientos/credito/${creditoSeleccionado.id}`;
-      console.log('URL de movimientos:', url);
-      const movimientosResponse = await authFetch(url);
-      console.log('Respuesta de movimientos:', movimientosResponse.status, movimientosResponse.statusText);
-      if (movimientosResponse.ok) {
-        movimientos = await movimientosResponse.json();
-        console.log('Movimientos cargados:', movimientos);
-      } else {
-        console.warn('Error en respuesta de movimientos:', movimientosResponse.status);
-      }
-    } catch (movError) {
-      console.error('Error al cargar movimientos:', movError);
-    }
-
-    mostrarDetalleCreditoModal(creditoSeleccionado, usuario, movimientos);
+    mostrarDetalleCreditoModal(creditoSeleccionado, usuario);
   } catch (error) {
     console.error('Error al buscar crédito:', error);
     showToast('Error al buscar crédito: ' + error.message, 'error');
   }
 };
 
-const mostrarDetalleCreditoModal = (credito, usuario, movimientos) => {
+const mostrarDetalleCreditoModal = (credito, usuario) => {
   // Información del usuario
   document.getElementById('creditoDetalleNombre').textContent = usuario.nombre;
   document.getElementById('creditoDetalleCedula').textContent = usuario.cedula;
@@ -766,61 +732,11 @@ const mostrarDetalleCreditoModal = (credito, usuario, movimientos) => {
   document.getElementById('creditoDetallePlazo').textContent = credito.plazo_meses;
   document.getElementById('creditoDetalleTasa').textContent = credito.porcentaje_interes;
   document.getElementById('creditoDetalleEstado').innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
-  const interesCobradoMov = (movimientos || [])
-    .filter(m => m.tipo_movimiento === 'interes')
-    .reduce((sum, m) => sum + (parseFloat(m.monto) || 0), 0);
-  const interesAcumuladoMov = (movimientos || [])
-    .filter(m => m.tipo_movimiento === 'interes')
-    .reduce((sum, m) => sum + (parseFloat(m.monto) || 0), 0);
-  const interesCobrado = (credito.interes_cobrado && credito.interes_cobrado > 0)
-    ? credito.interes_cobrado
-    : interesCobradoMov;
-  const interesAcumulado = Math.max(
-    parseFloat(credito.interes_acumulado || 0),
-    interesAcumuladoMov
-  );
+  const interesCobrado = parseFloat(credito.interes_cobrado || 0);
+  const interesAcumulado = parseFloat(credito.interes_acumulado || 0);
 
   document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(interesAcumulado || 0);
   document.getElementById('creditoDetalleInteresCobrado').textContent = formatCurrency(interesCobrado || 0);
-
-  // Cálculos financieros
-  const montoOriginal = parseFloat(credito.monto_original);
-  const saldoActual = parseFloat(credito.saldo_actual);
-
-  const totalAdeudado = saldoActual + interesAcumulado;
-  const totalPagado = montoOriginal - saldoActual;
-  const plazoMeses = credito.plazo_meses;
-
-  // Calcular meses restantes basado en la fecha de desembolso
-  const fechaDesembolso = new Date(credito.fecha_desembolso);
-  const fechaVencimiento = new Date(fechaDesembolso);
-  fechaVencimiento.setMonth(fechaVencimiento.getMonth() + plazoMeses);
-
-  const hoy = new Date();
-  const diferenciaMeses = (fechaVencimiento.getFullYear() - hoy.getFullYear()) * 12 + (fechaVencimiento.getMonth() - hoy.getMonth());
-  const mesesRestantes = Math.max(0, diferenciaMeses);
-
-  document.getElementById('creditoDetalleTotalAdeudado').textContent = formatCurrency(totalAdeudado);
-  document.getElementById('creditoDetalleSaldoPorPagar').textContent = formatCurrency(saldoActual);
-  document.getElementById('creditoDetalleTotalPagado').textContent = formatCurrency(totalPagado);
-  document.getElementById('creditoDetalleMesesRestantes').textContent = `${mesesRestantes} meses`;
-
-  // Mostrar movimientos
-  const movimientosBody = document.querySelector('#creditoDetalleMovimientos');
-  if (movimientos && movimientos.length > 0) {
-    movimientosBody.innerHTML = movimientos.map(m => `
-      <tr style="border-bottom: 1px solid #ddd;">
-        <td style="padding: 10px;">${new Date(m.fecha_movimiento).toLocaleDateString('es-CO')}</td>
-        <td style="padding: 10px;"><span style="background-color: ${getTipoBadgeColor(m.tipo_movimiento)}; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.85em;">${m.tipo_movimiento.charAt(0).toUpperCase() + m.tipo_movimiento.slice(1)}</span></td>
-        <td style="padding: 10px; text-align: right; font-weight: bold;">${formatCurrency(m.monto)}</td>
-        <td style="padding: 10px; text-align: right;">${formatCurrency(m.saldo_anterior || 0)}</td>
-        <td style="padding: 10px; text-align: right;">${formatCurrency(m.saldo_posterior || 0)}</td>
-        <td style="padding: 10px;">${m.descripcion || '-'}</td>
-      </tr>
-    `).join('');
-  } else {
-    movimientosBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #999;">No hay movimientos registrados</td></tr>';
-  }
 
   // Cambiar título del modal
   document.getElementById('creditoDetalleTitulo').textContent = `Detalle de Crédito - ${usuario.nombre}`;
