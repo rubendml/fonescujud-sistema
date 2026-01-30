@@ -46,7 +46,8 @@
       </nav>
 
       <div class="sidebar-footer">
-        <a href="#" class="nav-item logout-btn" style="color: #ff6b6b; border-top: 1px solid #094a5e; padding-top: 15px; margin-top: auto;">
+        <a href="#" class="nav-item logout-btn"
+          style="color: #ff6b6b; border-top: 1px solid #094a5e; padding-top: 15px; margin-top: auto;">
           <span class="icon">🚪</span>
           <span>Cerrar Sesión</span>
         </a>
@@ -58,8 +59,7 @@
       <!-- Header -->
       <header class="admin-header">
         <div class="header-title">
-          <img src="../img/logo.png" alt="Logo FONESCUJUD"
-            style="height:40px;vertical-align:middle;margin-right:10px;">
+          <img src="../img/logo.png" alt="Logo FONESCUJUD" style="height:40px;vertical-align:middle;margin-right:10px;">
           <h1 id="sectionTitle" style="display:inline-block;vertical-align:middle;">Dashboard</h1>
           <p id="sectionSubtitle">Resumen del estado financiero</p>
         </div>
@@ -199,7 +199,8 @@
         <!-- Créditos Section -->
         <section id="creditos-section" class="content-section">
           <div class="section-toolbar">
-            <input type="text" class="search-input" id="creditosBuscarCedula" placeholder="Buscar crédito por cédula...">
+            <input type="text" class="search-input" id="creditosBuscarCedula"
+              placeholder="Buscar crédito por cédula...">
             <button class="btn btn-info" id="btnBuscarCredito" style="margin-left: 10px;">
               <span>🔍</span> Buscar
             </button>
@@ -275,7 +276,7 @@
     <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
       <button class="modal-close">&times;</button>
       <h2 id="creditoDetalleTitulo">Detalle del Crédito</h2>
-      
+
       <div id="creditoDetalleContenido">
         <!-- Información del Usuario -->
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -301,10 +302,12 @@
           <h3 style="margin-top: 0; color: #094a5e;">💳 Información del Crédito</h3>
           <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
             <div>
-              <strong>Monto Desembolsado:</strong> <span id="creditoDetalleMonto" style="color: #27ae60; font-weight: bold;"></span>
+              <strong>Monto Desembolsado:</strong> <span id="creditoDetalleMonto"
+                style="color: #27ae60; font-weight: bold;"></span>
             </div>
             <div>
-              <strong>Saldo Actual:</strong> <span id="creditoDetalleSaldo" style="color: #e74c3c; font-weight: bold;"></span>
+              <strong>Saldo Actual:</strong> <span id="creditoDetalleSaldo"
+                style="color: #e74c3c; font-weight: bold;"></span>
             </div>
             <div>
               <strong>Fecha de Desembolso:</strong> <span id="creditoDetalleFechaDesembolso"></span>
@@ -319,9 +322,6 @@
               <strong>Estado:</strong> <span id="creditoDetalleEstado"></span>
             </div>
             <div>
-              <strong>Interés Acumulado:</strong> <span id="creditoDetalleInteresAcum" style="color: #f39c12;"></span>
-            </div>
-            <div>
               <strong>Interés Cobrado:</strong> <span id="creditoDetalleInteresCobrado" style="color: #f39c12;"></span>
             </div>
           </div>
@@ -329,7 +329,8 @@
       </div>
 
       <div style="text-align: right; margin-top: 20px;">
-        <button class="btn btn-secondary" onclick="document.getElementById('creditoDetalleModal').style.display='none';">
+        <button class="btn btn-secondary"
+          onclick="document.getElementById('creditoDetalleModal').style.display='none';">
           Cerrar
         </button>
       </div>
@@ -343,7 +344,7 @@
   </footer>
 
   <script src="../config.js?v=20260130"></script>
-  <script src="revisor-script.js?v=20260130"></script>
+  <script src="revisor-script.js?v=20260133"></script>
   <script src="auth.js?v=20260130"></script>
 </body>
 

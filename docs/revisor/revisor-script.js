@@ -38,11 +38,11 @@ const authFetch = async (url, options = {}) => {
       ...options.headers
     }
   });
-  
+
   if (handleAuthError(response)) {
     throw new Error('Unauthorized');
   }
-  
+
   return response;
 };
 
@@ -223,7 +223,7 @@ const buscarCreditoPorCedula = async (cedula) => {
     const usuariosResponse = await authFetch(`${API_BASE_URL}/usuarios`);
     if (!usuariosResponse.ok) throw new Error('Error al buscar usuarios');
     const usuarios = await usuariosResponse.json();
-    
+
     const usuario = usuarios.find(u => u.cedula === cedula.trim());
     if (!usuario) {
       alert('No se encontró usuario con esa cédula');
@@ -242,7 +242,7 @@ const buscarCreditoPorCedula = async (cedula) => {
 
     // Buscar el crédito más reciente o activo
     let creditoSeleccionado = creditos.find(c => c.estado === 'activo') || creditos[0];
-    
+
     // Mostrar el detalle del crédito
     mostrarDetalleCreditoModal(creditoSeleccionado, usuario);
   } catch (error) {
@@ -277,10 +277,7 @@ const mostrarDetalleCreditoModal = (credito, usuario) => {
   if (estadoEl) {
     estadoEl.innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
   }
-  const interesAcumulado = parseFloat(credito.interes_acumulado || 0);
-  const interesAcumEl = document.getElementById('creditoDetalleInteresAcum');
   const interesCobEl = document.getElementById('creditoDetalleInteresCobrado');
-  if (interesAcumEl) interesAcumEl.textContent = formatCurrency(interesAcumulado || 0);
   if (interesCobEl) interesCobEl.textContent = formatCurrency(credito.interes_cobrado || 0);
 
   // Cambiar título del modal
@@ -291,7 +288,7 @@ const mostrarDetalleCreditoModal = (credito, usuario) => {
 };
 
 const getTipoBadgeColor = (tipo) => {
-  switch(tipo) {
+  switch (tipo) {
     case 'desembolso': return '#094a5e';
     case 'abono': return '#27ae60';
     case 'interes': return '#f39c12';

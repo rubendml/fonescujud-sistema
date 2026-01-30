@@ -722,7 +722,7 @@ const buscarCreditoPorCedula = async (cedula) => {
 const buscarCreditoPorCedulaMovimientos = async () => {
   const input = document.getElementById('movimientosCedulaBuscar');
   if (!input) return;
-  
+
   const cedula = input.value.trim();
   if (!cedula) {
     showToast('Por favor ingresa una cédula', 'warning');
@@ -757,19 +757,19 @@ const buscarCreditoPorCedulaMovimientos = async () => {
     const response = await authFetch(`${API_BASE_URL}/movimientos`);
     if (!response.ok) throw new Error('Error al cargar movimientos');
     const todosMovimientos = await response.json();
-    
+
     // Filtrar movimientos del crédito seleccionado
     const movimientosCredito = todosMovimientos.filter(m => m.credito_id === creditoSeleccionado.id);
-    
+
     if (movimientosCredito.length === 0) {
       showToast(`El crédito #${creditoSeleccionado.id} no tiene movimientos registrados`, 'info');
     } else {
       showToast(`Mostrando ${movimientosCredito.length} movimiento(s) del crédito #${creditoSeleccionado.id}`, 'success');
     }
-    
+
     // Mostrar solo los movimientos de este crédito
     displayMovimientos(movimientosCredito);
-    
+
   } catch (error) {
     console.error('Error al buscar crédito:', error);
     showToast('Error al buscar crédito: ' + error.message, 'error');
@@ -803,11 +803,8 @@ const mostrarDetalleCreditoModal = (credito, usuario) => {
     estadoEl.innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
   }
   const interesCobrado = parseFloat(credito.interes_cobrado || 0);
-  const interesAcumulado = parseFloat(credito.interes_acumulado || 0);
 
-  const interesAcumEl = document.getElementById('creditoDetalleInteresAcum');
   const interesCobEl = document.getElementById('creditoDetalleInteresCobrado');
-  if (interesAcumEl) interesAcumEl.textContent = formatCurrency(interesAcumulado || 0);
   if (interesCobEl) interesCobEl.textContent = formatCurrency(interesCobrado || 0);
 
   // Cambiar título del modal
