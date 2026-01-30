@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '../db.js';
+import { calcularInteres } from '../utils/calculos.js';
 
 // Obtener todos los movimientos de créditos
 export const getAllMovimientos = async (req, res) => {
@@ -38,6 +39,10 @@ export const getMovimientosCredito = async (req, res) => {
     const creditoIdNum = parseInt(credito_id);
     console.log('[getMovimientosCredito] Iniciando solicitud para crédito:', creditoIdNum);
 
+    if (Number.isNaN(creditoIdNum)) {
+      return res.status(400).json({ error: 'credito_id inválido' });
+    }
+
     const { data, error } = await supabaseAdmin
       .from('movimientos_creditos')
       .select(`
@@ -52,8 +57,53 @@ export const getMovimientosCredito = async (req, res) => {
       console.error('[getMovimientosCredito] Supabase error:', error);
       throw error;
     }
-    console.log('[getMovimientosCredito] Datos obtenidos:', data.length, 'registros');
-    res.json(data);
+    let movimientos = data || [];
+
+    const tieneInteres = movimientos.some(m => m.tipo_movimiento === 'interes');
+
+    if (!tieneInteres) {
+      const { data: creditoRef, error: errorCredito } = await supabaseAdmin
+        .from('creditos')
+        .select('id, usuario_id, monto_original, porcentaje_interes, fecha_desembolso')
+        .eq('id', creditoIdNum)
+        .single();
+
+      if (errorCredito) {
+        console.error('[getMovimientosCredito] Error al cargar crédito:', errorCredito);
+        throw errorCredito;
+      }
+
+      if (creditoRef) {
+        const interesInicial = calcularInteres(
+          parseFloat(creditoRef.monto_original),
+          parseFloat(creditoRef.porcentaje_interes),
+          1
+        );
+
+        if (interesInicial > 0) {
+          movimientos = [
+            {
+              id: `virtual-interes-inicial-${creditoIdNum}`,
+              credito_id: creditoIdNum,
+              usuario_id: creditoRef.usuario_id,
+              tipo_movimiento: 'interes',
+              monto: interesInicial,
+              fecha_movimiento: creditoRef.fecha_desembolso,
+              saldo_anterior: null,
+              saldo_posterior: null,
+              descripcion: `Interés inicial (${creditoRef.porcentaje_interes}%)`,
+              creditos: creditoRef,
+            },
+            ...movimientos,
+          ];
+        }
+      }
+    }
+
+    movimientos.sort((a, b) => new Date(b.fecha_movimiento) - new Date(a.fecha_movimiento));
+
+    console.log('[getMovimientosCredito] Datos obtenidos:', movimientos.length, 'registros');
+    res.json(movimientos);
   } catch (error) {
     console.error('[getMovimientosCredito] Error catchado:', error.message);
     res.status(500).json({ error: error.message });
@@ -92,7 +142,7 @@ export const getMovimientosUsuario = async (req, res) => {
 export const getResumenMovimientos = async (req, res) => {
   try {
     console.log('[getResumenMovimientos] Iniciando solicitud');
-    
+
     const { data: movimientos, error } = await supabaseAdmin
       .from('movimientos_creditos')
       .select('*');
