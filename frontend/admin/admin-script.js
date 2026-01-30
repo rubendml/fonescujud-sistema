@@ -718,6 +718,15 @@ const buscarCreditoPorCedula = async (cedula) => {
   }
 };
 
+// Función wrapper para buscar desde sección de movimientos
+const buscarCreditoPorCedulaMovimientos = () => {
+  const input = document.getElementById('movimientosCedulaBuscar');
+  if (input) {
+    const cedula = input.value.trim();
+    buscarCreditoPorCedula(cedula);
+  }
+};
+
 const mostrarDetalleCreditoModal = (credito, usuario) => {
   // Información del usuario
   const nombreEl = document.getElementById('creditoDetalleNombre');
@@ -1259,6 +1268,13 @@ document.getElementById('creditosBuscarCedula')?.addEventListener('keypress', (e
   if (e.key === 'Enter') {
     const cedula = e.target.value;
     buscarCreditoPorCedula(cedula);
+  }
+});
+
+// Búsqueda de crédito desde movimientos con Enter
+document.getElementById('movimientosCedulaBuscar')?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    buscarCreditoPorCedulaMovimientos();
   }
 });
 
