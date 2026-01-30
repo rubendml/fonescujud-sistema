@@ -253,21 +253,35 @@ const buscarCreditoPorCedula = async (cedula) => {
 
 const mostrarDetalleCreditoModal = (credito, usuario) => {
   // Información del usuario
-  document.getElementById('creditoDetalleNombre').textContent = usuario.nombre;
-  document.getElementById('creditoDetalleCedula').textContent = usuario.cedula;
-  document.getElementById('creditoDetalleEmail').textContent = usuario.email;
-  document.getElementById('creditoDetalleTelefono').textContent = usuario.telefono || 'N/A';
+  const nombreEl = document.getElementById('creditoDetalleNombre');
+  const cedulaEl = document.getElementById('creditoDetalleCedula');
+  const emailEl = document.getElementById('creditoDetalleEmail');
+  const telefonoEl = document.getElementById('creditoDetalleTelefono');
+  if (nombreEl) nombreEl.textContent = usuario.nombre;
+  if (cedulaEl) cedulaEl.textContent = usuario.cedula;
+  if (emailEl) emailEl.textContent = usuario.email;
+  if (telefonoEl) telefonoEl.textContent = usuario.telefono || 'N/A';
 
   // Información del crédito
-  document.getElementById('creditoDetalleMonto').textContent = formatCurrency(credito.monto_original);
-  document.getElementById('creditoDetalleSaldo').textContent = formatCurrency(credito.saldo_actual);
-  document.getElementById('creditoDetalleFechaDesembolso').textContent = new Date(credito.fecha_desembolso).toLocaleDateString('es-CO');
-  document.getElementById('creditoDetallePlazo').textContent = credito.plazo_meses;
-  document.getElementById('creditoDetalleTasa').textContent = credito.porcentaje_interes;
-  document.getElementById('creditoDetalleEstado').innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
+  const montoEl = document.getElementById('creditoDetalleMonto');
+  const saldoEl = document.getElementById('creditoDetalleSaldo');
+  const fechaEl = document.getElementById('creditoDetalleFechaDesembolso');
+  const plazoEl = document.getElementById('creditoDetallePlazo');
+  const tasaEl = document.getElementById('creditoDetalleTasa');
+  const estadoEl = document.getElementById('creditoDetalleEstado');
+  if (montoEl) montoEl.textContent = formatCurrency(credito.monto_original);
+  if (saldoEl) saldoEl.textContent = formatCurrency(credito.saldo_actual);
+  if (fechaEl) fechaEl.textContent = new Date(credito.fecha_desembolso).toLocaleDateString('es-CO');
+  if (plazoEl) plazoEl.textContent = credito.plazo_meses;
+  if (tasaEl) tasaEl.textContent = credito.porcentaje_interes;
+  if (estadoEl) {
+    estadoEl.innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
+  }
   const interesAcumulado = parseFloat(credito.interes_acumulado || 0);
-  document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(interesAcumulado || 0);
-  document.getElementById('creditoDetalleInteresCobrado').textContent = formatCurrency(credito.interes_cobrado || 0);
+  const interesAcumEl = document.getElementById('creditoDetalleInteresAcum');
+  const interesCobEl = document.getElementById('creditoDetalleInteresCobrado');
+  if (interesAcumEl) interesAcumEl.textContent = formatCurrency(interesAcumulado || 0);
+  if (interesCobEl) interesCobEl.textContent = formatCurrency(credito.interes_cobrado || 0);
 
   // Cambiar título del modal
   document.getElementById('creditoDetalleTitulo').textContent = `Detalle de Crédito - ${usuario.nombre}`;
