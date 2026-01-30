@@ -322,10 +322,13 @@ const displayCuotas = (cuotas) => {
 
   const filtroMes = document.getElementById('cuotasFilter')?.value || '';
 
-  const filtrados = (cuotas || []).filter(c => {
+  let filtrados = (cuotas || []).filter(c => {
     if (!filtroMes) return true;
     return c.mes.toString() === filtroMes;
   });
+
+  // Ordenar por fecha (más reciente primero)
+  filtrados = filtrados.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
 
   if (filtrados.length === 0) {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No hay cuotas para mostrar</td></tr>';
@@ -359,73 +362,130 @@ const mostrarResumenCuotas = () => {
     return;
   }
 
-  // Agrupar cuotas por usuario
-  const resumenPorUsuario = {};
-  cuotasCache.forEach(c => {
-    const usuarioId = c.usuario_id;
-    const usuarioNombre = c.usuarios?.nombre || 'Usuario desconocido';
-    
-    if (!resumenPorUsuario[usuarioId]) {
-      resumenPorUsuario[usuarioId] = {
-        nombre: usuarioNombre,
-        totalPagado: 0,
-        cantidadCuotas: 0,
-        detalle: []
-      };
-    }
-    
-    resumenPorUsuario[usuarioId].totalPagado += c.valor_pagado || 0;
-    resumenPorUsuario[usuarioId].cantidadCuotas += 1;
-    resumenPorUsuario[usuarioId].detalle.push({
-      mes: c.mes,
-      anio: c.anio,
-      monto: c.valor_pagado,
-      fecha: c.fecha_pago
-    });
+  // Crear modal para pedir la cédula
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'flex';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 400px;">
+      <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+      <h2>Consultar Resumen de Cuotas</h2>
+      <p>Ingrese el número de cédula del afiliado:</p>
+      <input type="text" id="cedulaBusqueda" placeholder="Número de cédula" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px;">
+      <div style="text-align: right; gap: 10px; display: flex; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="this.closest('.modal').remove();">Cancelar</button>
+        <button class="btn btn-primary" onclick="buscarResumenAfiliado();">Buscar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // Enfoque en el input
+  setTimeout(() => document.getElementById('cedulaBusqueda')?.focus(), 100);
+};
+
+const buscarResumenAfiliado = async () => {
+  const cedula = document.getElementById('cedulaBusqueda')?.value?.trim();
+  if (!cedula) {
+    showToast('Ingrese una cédula', 'warning');
+    return;
+  }
+
+  // Cerrar modal de búsqueda
+  document.querySelector('.modal')?.remove();
+
+  if (!cuotasCache || cuotasCache.length === 0) {
+    showToast('No hay cuotas cargadas', 'warning');
+    return;
+  }
+
+  // Buscar usuario por cédula
+  const cuotasUsuario = cuotasCache.filter(c => {
+    const usuarioCedula = c.usuarios?.cedula || '';
+    return usuarioCedula.toString() === cedula.toString();
   });
 
-  // Generar contenido del modal
-  let contenido = '<div style="max-height: 70vh; overflow-y: auto;">';
-  Object.values(resumenPorUsuario).forEach(usuario => {
-    contenido += `
-      <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-        <h3 style="margin-top: 0; color: #094a5e;">${usuario.nombre}</h3>
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px;">
-          <div><strong>Cuotas pagadas:</strong> ${usuario.cantidadCuotas}</div>
-          <div><strong>Total:</strong> ${formatCurrency(usuario.totalPagado)}</div>
+  if (cuotasUsuario.length === 0) {
+    showToast(`No se encontraron cuotas para la cédula: ${cedula}`, 'warning');
+    return;
+  }
+
+  const usuario = cuotasUsuario[0]?.usuarios;
+  let totalPagado = 0;
+  let totalCuotas = cuotasUsuario.length;
+
+  // Ordenar por fecha (más reciente primero)
+  cuotasUsuario.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
+  
+  cuotasUsuario.forEach(c => {
+    totalPagado += c.valor_pagado || 0;
+  });
+
+  // Crear modal con resumen
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'flex';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 900px;">
+      <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+      <h2>Resumen de Cuotas - ${usuario?.nombre || 'Usuario'}</h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;">
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+          <strong style="color: #666;">Cédula:</strong>
+          <p style="margin: 5px 0; font-size: 1.1em; color: #094a5e;">${usuario?.cedula || 'N/A'}</p>
         </div>
-        <table style="width: 100%; font-size: 0.9em; border-collapse: collapse;">
-          <thead style="background: #094a5e; color: white;">
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+          <strong style="color: #666;">Nombre:</strong>
+          <p style="margin: 5px 0; font-size: 1.1em; color: #094a5e;">${usuario?.nombre || 'N/A'}</p>
+        </div>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+          <strong style="color: #666;">Email:</strong>
+          <p style="margin: 5px 0; font-size: 0.95em; color: #094a5e;">${usuario?.email || 'N/A'}</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; background: #e8f4f8; padding: 15px; border-radius: 8px;">
+        <div>
+          <strong style="color: #094a5e; display: block;">Cuotas Pagadas</strong>
+          <p style="margin: 5px 0; font-size: 1.5em; color: #27ae60;">${totalCuotas}</p>
+        </div>
+        <div>
+          <strong style="color: #094a5e; display: block;">Total Pagado</strong>
+          <p style="margin: 5px 0; font-size: 1.5em; color: #27ae60;">${formatCurrency(totalPagado)}</p>
+        </div>
+        <div>
+          <strong style="color: #094a5e; display: block;">Promedio por Cuota</strong>
+          <p style="margin: 5px 0; font-size: 1.5em; color: #3498db;">${formatCurrency(totalPagado / totalCuotas)}</p>
+        </div>
+      </div>
+
+      <h3 style="color: #094a5e; border-bottom: 2px solid #094a5e; padding-bottom: 10px;">Detalle de Cuotas</h3>
+      <div style="max-height: 50vh; overflow-y: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.95em;">
+          <thead style="background: #094a5e; color: white; position: sticky; top: 0;">
             <tr>
-              <th style="padding: 8px; text-align: left;">Mes</th>
-              <th style="padding: 8px; text-align: left;">Año</th>
-              <th style="padding: 8px; text-align: right;">Monto</th>
+              <th style="padding: 10px; text-align: left;">Mes/Año</th>
+              <th style="padding: 10px; text-align: left;">Fecha de Pago</th>
+              <th style="padding: 10px; text-align: right;">Monto</th>
+              <th style="padding: 10px; text-align: center;">Estado</th>
             </tr>
           </thead>
           <tbody>
-            ${usuario.detalle.map(d => `
+            ${cuotasUsuario.map(c => `
               <tr style="border-bottom: 1px solid #ddd;">
-                <td style="padding: 8px;">${d.mes}</td>
-                <td style="padding: 8px;">${d.anio}</td>
-                <td style="padding: 8px; text-align: right;">${formatCurrency(d.monto)}</td>
+                <td style="padding: 10px;">${c.mes}/${c.anio}</td>
+                <td style="padding: 10px;">${new Date(c.fecha_pago).toLocaleDateString('es-CO')}</td>
+                <td style="padding: 10px; text-align: right; font-weight: bold;">${formatCurrency(c.valor_pagado)}</td>
+                <td style="padding: 10px; text-align: center;">
+                  <span class="badge badge-success">${c.estado}</span>
+                </td>
               </tr>
             `).join('')}
           </tbody>
         </table>
       </div>
-    `;
-  });
-  contenido += '</div>';
 
-  // Mostrar en modal
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.style.display = 'flex';
-  modal.innerHTML = `
-    <div class="modal-content" style="max-width: 800px;">
-      <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
-      <h2>Resumen de Cuotas por Afiliado</h2>
-      ${contenido}
       <div style="text-align: right; margin-top: 20px;">
         <button class="btn btn-secondary" onclick="this.closest('.modal').remove();">Cerrar</button>
       </div>
