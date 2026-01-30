@@ -35,7 +35,8 @@ export const getAllMovimientos = async (req, res) => {
 export const getMovimientosCredito = async (req, res) => {
   try {
     const { credito_id } = req.params;
-    console.log('[getMovimientosCredito] Iniciando solicitud para crédito:', credito_id);
+    const creditoIdNum = parseInt(credito_id);
+    console.log('[getMovimientosCredito] Iniciando solicitud para crédito:', creditoIdNum);
 
     const { data, error } = await supabaseAdmin
       .from('movimientos_creditos')
@@ -44,7 +45,7 @@ export const getMovimientosCredito = async (req, res) => {
         creditos(monto_original, saldo_actual, porcentaje_interes),
         usuarios(nombre, cedula)
       `)
-      .eq('credito_id', credito_id)
+      .eq('credito_id', creditoIdNum)
       .order('fecha_movimiento', { ascending: false });
 
     if (error) {

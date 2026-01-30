@@ -89,6 +89,8 @@ const showToast = (message, type = 'success') => {
 let usuariosCache = [];
 // Almacenar créditos para filtros y búsqueda en vivo
 let creditosCache = [];
+// Almacenar cuotas para filtrado por mes
+let cuotasCache = [];
 
 // Cargar usuarios en los dropdowns
 const loadUsuariosInSelects = async () => {
@@ -305,7 +307,8 @@ const fetchCuotas = async () => {
     const response = await authFetch(`${API_BASE_URL}/cuotas`);
     if (!response.ok) throw new Error('Error fetching cuotas');
     const cuotas = await response.json();
-    displayCuotas(cuotas);
+    cuotasCache = cuotas;
+    displayCuotas(cuotasCache);
   } catch (error) {
     console.error('Error:', error);
     displayError('cuotas');
@@ -316,7 +319,19 @@ const displayCuotas = (cuotas) => {
   const tbody = document.querySelector('#cuotasTable');
   if (!tbody) return;
 
-  tbody.innerHTML = cuotas.map(c => `
+  const filtroMes = document.getElementById('cuotasMesFilter')?.value || '';
+
+  const filtrados = (cuotas || []).filter(c => {
+    if (!filtroMes) return true;
+    return c.mes.toString() === filtroMes;
+  });
+
+  if (filtrados.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">No hay cuotas para mostrar</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtrados.map(c => `
     <tr>
       <td>${c.usuarios?.nombre || 'N/A'}</td>
       <td>${c.mes}/${c.anio}</td>
@@ -1160,6 +1175,15 @@ document.getElementById('creditosFilter')?.addEventListener('change', () => {
     displayCreditos(creditosCache);
   } else {
     fetchCreditos();
+  }
+});
+
+// Filtro de cuotas por mes
+document.getElementById('cuotasMesFilter')?.addEventListener('change', () => {
+  if (cuotasCache && cuotasCache.length > 0) {
+    displayCuotas(cuotasCache);
+  } else {
+    fetchCuotas();
   }
 });
 
