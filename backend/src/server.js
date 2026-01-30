@@ -19,19 +19,19 @@ const allowedOrigins = [
   'https://fonescujud-sistema.vercel.app'
 ];
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (origin.includes('github.io')) return true;
+  if (origin.includes('vercel.app')) return true;
+  return false;
+};
+
 const corsOptions = {
   origin: (origin, callback) => {
-    // Permitir sin origen (para requests de servidor a servidor)
-    if (!origin) return callback(null, true);
-    // Permitir orígenes exactos
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    // Permitir cualquier origin que sea github.io
-    if (origin && origin.includes('github.io')) return callback(null, true);
-    // Permitir vercel
-    if (origin && origin.includes('vercel.app')) return callback(null, true);
-    // Bloquear otros
+    if (isAllowedOrigin(origin)) return callback(null, true);
     console.warn('[CORS] Origin bloqueado:', origin);
-    return callback(null, true);
+    return callback(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -45,16 +45,16 @@ app.options('*', cors(corsOptions));
 // Forzar cabeceras CORS en todas las respuestas y manejar preflight explícito
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin && isAllowedOrigin(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   }
   res.header('Vary', 'Origin');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
+    return res.sendStatus(200);
   }
   next();
 });
