@@ -216,11 +216,33 @@ const fetchUsuarios = async () => {
   }
 };
 
-const displayUsuarios = (usuarios) => {
+// Cache para filtrado de usuarios
+let usuariosCache = [];
+
+const displayUsuarios = (usuarios, filter = '') => {
   const tbody = document.querySelector('#usuariosTable');
   if (!tbody) return;
 
-  tbody.innerHTML = usuarios.map(u => `
+  // Guardar en cache
+  usuariosCache = usuarios;
+
+  // Filtrar por nombre si hay búsqueda
+  let filtered = usuarios;
+  if (filter.trim()) {
+    const searchLower = filter.toLowerCase().trim();
+    filtered = usuarios.filter(u =>
+      u.nombre.toLowerCase().includes(searchLower) ||
+      u.cedula.toLowerCase().includes(searchLower) ||
+      u.email.toLowerCase().includes(searchLower)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No se encontraron usuarios</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(u => `
     <tr>
       <td>${u.nombre}</td>
       <td>${u.cedula}</td>
@@ -460,6 +482,124 @@ const editCredito = (id) => {
   currentEditingId = id;
   currentEditingType = 'credito';
   openModal('creditoModal');
+};
+
+// Búsqueda de Crédito por Cédula
+const buscarCreditoPorCedula = async (cedula) => {
+  if (!cedula || cedula.trim() === '') {
+    showToast('Por favor ingresa una cédula', 'warning');
+    return;
+  }
+
+  try {
+    // Buscar usuario con esa cédula
+    const usuariosResponse = await authFetch(`${API_BASE_URL}/usuarios`);
+    if (!usuariosResponse.ok) throw new Error('Error al buscar usuarios');
+    const usuarios = await usuariosResponse.json();
+    
+    const usuario = usuarios.find(u => u.cedula === cedula.trim());
+    if (!usuario) {
+      showToast('No se encontró usuario con esa cédula', 'warning');
+      return;
+    }
+
+    // Buscar créditos del usuario
+    const creditosResponse = await authFetch(`${API_BASE_URL}/creditos/usuario/${usuario.id}`);
+    if (!creditosResponse.ok) throw new Error('Error al buscar créditos');
+    const creditos = await creditosResponse.json();
+
+    if (!creditos || creditos.length === 0) {
+      showToast('Este usuario no tiene créditos registrados', 'info');
+      return;
+    }
+
+    // Buscar el crédito más reciente o activo
+    let creditoSeleccionado = creditos.find(c => c.estado === 'activo') || creditos[0];
+    
+    // Obtener movimientos del crédito
+    const movimientosResponse = await authFetch(`${API_BASE_URL}/movimientos/credito/${creditoSeleccionado.id}`);
+    const movimientos = movimientosResponse.ok ? await movimientosResponse.json() : [];
+
+    // Mostrar el detalle del crédito
+    mostrarDetalleCreditoModal(creditoSeleccionado, usuario, movimientos);
+  } catch (error) {
+    console.error('Error al buscar crédito:', error);
+    showToast('Error al buscar crédito: ' + error.message, 'error');
+  }
+};
+
+const mostrarDetalleCreditoModal = (credito, usuario, movimientos) => {
+  // Información del usuario
+  document.getElementById('creditoDetalleNombre').textContent = usuario.nombre;
+  document.getElementById('creditoDetalleCedula').textContent = usuario.cedula;
+  document.getElementById('creditoDetalleEmail').textContent = usuario.email;
+  document.getElementById('creditoDetalleTelefono').textContent = usuario.telefono || 'N/A';
+
+  // Información del crédito
+  document.getElementById('creditoDetalleMonto').textContent = formatCurrency(credito.monto_original);
+  document.getElementById('creditoDetalleSaldo').textContent = formatCurrency(credito.saldo_actual);
+  document.getElementById('creditoDetalleFechaDesembolso').textContent = new Date(credito.fecha_desembolso).toLocaleDateString('es-CO');
+  document.getElementById('creditoDetallePlazo').textContent = credito.plazo_meses;
+  document.getElementById('creditoDetalleTasa').textContent = credito.porcentaje_interes;
+  document.getElementById('creditoDetalleEstado').innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
+  document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(credito.interes_acumulado || 0);
+  document.getElementById('creditoDetalleInteresCobrado').textContent = formatCurrency(credito.interes_cobrado || 0);
+
+  // Cálculos financieros
+  const montoOriginal = parseFloat(credito.monto_original);
+  const saldoActual = parseFloat(credito.saldo_actual);
+  const interesAcumulado = parseFloat(credito.interes_acumulado || 0);
+  
+  const totalAdeudado = saldoActual + interesAcumulado;
+  const totalPagado = montoOriginal - saldoActual;
+  const plazoMeses = credito.plazo_meses;
+  
+  // Calcular meses restantes basado en la fecha de desembolso
+  const fechaDesembolso = new Date(credito.fecha_desembolso);
+  const fechaVencimiento = new Date(fechaDesembolso);
+  fechaVencimiento.setMonth(fechaVencimiento.getMonth() + plazoMeses);
+  
+  const hoy = new Date();
+  const diferenciaMeses = (fechaVencimiento.getFullYear() - hoy.getFullYear()) * 12 + (fechaVencimiento.getMonth() - hoy.getMonth());
+  const mesesRestantes = Math.max(0, diferenciaMeses);
+
+  document.getElementById('creditoDetalleTotalAdeudado').textContent = formatCurrency(totalAdeudado);
+  document.getElementById('creditoDetalleSaldoPorPagar').textContent = formatCurrency(saldoActual);
+  document.getElementById('creditoDetalleTotalPagado').textContent = formatCurrency(totalPagado);
+  document.getElementById('creditoDetalleMesesRestantes').textContent = `${mesesRestantes} meses`;
+
+  // Mostrar movimientos
+  const movimientosBody = document.querySelector('#creditoDetalleMovimientos');
+  if (movimientos && movimientos.length > 0) {
+    movimientosBody.innerHTML = movimientos.map(m => `
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 10px;">${new Date(m.fecha_movimiento).toLocaleDateString('es-CO')}</td>
+        <td style="padding: 10px;"><span style="background-color: ${getTipoBadgeColor(m.tipo_movimiento)}; color: white; padding: 3px 8px; border-radius: 3px; font-size: 0.85em;">${m.tipo_movimiento.charAt(0).toUpperCase() + m.tipo_movimiento.slice(1)}</span></td>
+        <td style="padding: 10px; text-align: right; font-weight: bold;">${formatCurrency(m.monto)}</td>
+        <td style="padding: 10px; text-align: right;">${formatCurrency(m.saldo_anterior || 0)}</td>
+        <td style="padding: 10px; text-align: right;">${formatCurrency(m.saldo_posterior || 0)}</td>
+        <td style="padding: 10px;">${m.descripcion || '-'}</td>
+      </tr>
+    `).join('');
+  } else {
+    movimientosBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #999;">No hay movimientos registrados</td></tr>';
+  }
+
+  // Cambiar título del modal
+  document.getElementById('creditoDetalleTitulo').textContent = `Detalle de Crédito - ${usuario.nombre}`;
+
+  // Abrir el modal
+  openModal('creditoDetalleModal');
+};
+
+const getTipoBadgeColor = (tipo) => {
+  switch(tipo) {
+    case 'desembolso': return '#094a5e';
+    case 'abono': return '#27ae60';
+    case 'interes': return '#f39c12';
+    case 'ajuste': return '#9b59b6';
+    default: return '#7f8c8d';
+  }
 };
 
 // Fetch Multas
@@ -939,6 +1079,31 @@ document.querySelectorAll('.modal-close').forEach(btn => {
     const modal = e.target.closest('.modal');
     if (modal) modal.style.display = 'none';
   });
+});
+
+// Botón de búsqueda de crédito por cédula
+document.getElementById('btnBuscarCredito')?.addEventListener('click', () => {
+  const cedula = document.getElementById('creditosBuscarCedula')?.value;
+  buscarCreditoPorCedula(cedula);
+});
+
+// Permitir búsqueda con Enter
+document.getElementById('creditosBuscarCedula')?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const cedula = e.target.value;
+    buscarCreditoPorCedula(cedula);
+  }
+});
+
+// Filtro de usuarios - búsqueda por nombre
+document.getElementById('usuariosSearch')?.addEventListener('input', (e) => {
+  const searchTerm = e.target.value;
+  displayUsuarios(usuariosCache, searchTerm);
+});
+
+// Filtro de créditos
+document.getElementById('creditosFilter')?.addEventListener('change', () => {
+  fetchCreditos();
 });
 
 // Filtro de movimientos

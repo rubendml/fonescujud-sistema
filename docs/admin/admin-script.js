@@ -216,11 +216,33 @@ const fetchUsuarios = async () => {
   }
 };
 
-const displayUsuarios = (usuarios) => {
+// Cache para filtrado de usuarios
+let usuariosCache = [];
+
+const displayUsuarios = (usuarios, filter = '') => {
   const tbody = document.querySelector('#usuariosTable');
   if (!tbody) return;
 
-  tbody.innerHTML = usuarios.map(u => `
+  // Guardar en cache
+  usuariosCache = usuarios;
+
+  // Filtrar por nombre si hay búsqueda
+  let filtered = usuarios;
+  if (filter.trim()) {
+    const searchLower = filter.toLowerCase().trim();
+    filtered = usuarios.filter(u =>
+      u.nombre.toLowerCase().includes(searchLower) ||
+      u.cedula.toLowerCase().includes(searchLower) ||
+      u.email.toLowerCase().includes(searchLower)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No se encontraron usuarios</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(u => `
     <tr>
       <td>${u.nombre}</td>
       <td>${u.cedula}</td>
@@ -939,6 +961,12 @@ document.querySelectorAll('.modal-close').forEach(btn => {
     const modal = e.target.closest('.modal');
     if (modal) modal.style.display = 'none';
   });
+});
+
+// Filtro de usuarios - búsqueda por nombre
+document.getElementById('usuariosSearch')?.addEventListener('input', (e) => {
+  const searchTerm = e.target.value;
+  displayUsuarios(usuariosCache, searchTerm);
 });
 
 // Filtro de movimientos
