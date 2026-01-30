@@ -319,7 +319,7 @@ const displayCuotas = (cuotas) => {
   const tbody = document.querySelector('#cuotasTable');
   if (!tbody) return;
 
-  const filtroMes = document.getElementById('cuotasMesFilter')?.value || '';
+  const filtroMes = document.getElementById('cuotasFilter')?.value || '';
 
   const filtrados = (cuotas || []).filter(c => {
     if (!filtroMes) return true;
@@ -327,7 +327,7 @@ const displayCuotas = (cuotas) => {
   });
 
   if (filtrados.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">No hay cuotas para mostrar</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No hay cuotas para mostrar</td></tr>';
     return;
   }
 
@@ -349,6 +349,88 @@ const editCuota = (id) => {
   currentEditingId = id;
   currentEditingType = 'cuota';
   openModal('cuotaModal');
+};
+
+// Mostrar resumen de cuotas por afiliado
+const mostrarResumenCuotas = () => {
+  if (!cuotasCache || cuotasCache.length === 0) {
+    showToast('No hay cuotas cargadas', 'warning');
+    return;
+  }
+
+  // Agrupar cuotas por usuario
+  const resumenPorUsuario = {};
+  cuotasCache.forEach(c => {
+    const usuarioId = c.usuario_id;
+    const usuarioNombre = c.usuarios?.nombre || 'Usuario desconocido';
+    
+    if (!resumenPorUsuario[usuarioId]) {
+      resumenPorUsuario[usuarioId] = {
+        nombre: usuarioNombre,
+        totalPagado: 0,
+        cantidadCuotas: 0,
+        detalle: []
+      };
+    }
+    
+    resumenPorUsuario[usuarioId].totalPagado += c.valor_pagado || 0;
+    resumenPorUsuario[usuarioId].cantidadCuotas += 1;
+    resumenPorUsuario[usuarioId].detalle.push({
+      mes: c.mes,
+      anio: c.anio,
+      monto: c.valor_pagado,
+      fecha: c.fecha_pago
+    });
+  });
+
+  // Generar contenido del modal
+  let contenido = '<div style="max-height: 70vh; overflow-y: auto;">';
+  Object.values(resumenPorUsuario).forEach(usuario => {
+    contenido += `
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <h3 style="margin-top: 0; color: #094a5e;">${usuario.nombre}</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px;">
+          <div><strong>Cuotas pagadas:</strong> ${usuario.cantidadCuotas}</div>
+          <div><strong>Total:</strong> ${formatCurrency(usuario.totalPagado)}</div>
+        </div>
+        <table style="width: 100%; font-size: 0.9em; border-collapse: collapse;">
+          <thead style="background: #094a5e; color: white;">
+            <tr>
+              <th style="padding: 8px; text-align: left;">Mes</th>
+              <th style="padding: 8px; text-align: left;">Año</th>
+              <th style="padding: 8px; text-align: right;">Monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${usuario.detalle.map(d => `
+              <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;">${d.mes}</td>
+                <td style="padding: 8px;">${d.anio}</td>
+                <td style="padding: 8px; text-align: right;">${formatCurrency(d.monto)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  });
+  contenido += '</div>';
+
+  // Mostrar en modal
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'flex';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 800px;">
+      <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+      <h2>Resumen de Cuotas por Afiliado</h2>
+      ${contenido}
+      <div style="text-align: right; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="this.closest('.modal').remove();">Cerrar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
 };
 
 // Fetch Créditos
@@ -1179,7 +1261,7 @@ document.getElementById('creditosFilter')?.addEventListener('change', () => {
 });
 
 // Filtro de cuotas por mes
-document.getElementById('cuotasMesFilter')?.addEventListener('change', () => {
+document.getElementById('cuotasFilter')?.addEventListener('change', () => {
   if (cuotasCache && cuotasCache.length > 0) {
     displayCuotas(cuotasCache);
   } else {
