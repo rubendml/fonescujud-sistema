@@ -43,11 +43,11 @@ const authFetch = async (url, options = {}) => {
     },
     credentials: 'include'
   });
-  
+
   if (handleAuthError(response)) {
     throw new Error('Unauthorized');
   }
-  
+
   return response;
 };
 
@@ -379,7 +379,7 @@ const mostrarResumenCuotas = () => {
     </div>
   `;
   document.body.appendChild(modal);
-  
+
   // Enfoque en el input
   setTimeout(() => document.getElementById('cedulaBusqueda')?.focus(), 100);
 };
@@ -416,7 +416,7 @@ const buscarResumenAfiliado = async () => {
 
   // Ordenar por fecha (más reciente primero)
   cuotasUsuario.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
-  
+
   cuotasUsuario.forEach(c => {
     totalPagado += c.valor_pagado || 0;
   });
@@ -769,27 +769,33 @@ const mostrarDetalleCreditoModal = (credito, usuario, movimientos) => {
   const interesCobradoMov = (movimientos || [])
     .filter(m => m.tipo_movimiento === 'interes')
     .reduce((sum, m) => sum + (parseFloat(m.monto) || 0), 0);
+  const interesAcumuladoMov = (movimientos || [])
+    .filter(m => m.tipo_movimiento === 'interes')
+    .reduce((sum, m) => sum + (parseFloat(m.monto) || 0), 0);
   const interesCobrado = (credito.interes_cobrado && credito.interes_cobrado > 0)
     ? credito.interes_cobrado
     : interesCobradoMov;
+  const interesAcumulado = Math.max(
+    parseFloat(credito.interes_acumulado || 0),
+    interesAcumuladoMov
+  );
 
-  document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(credito.interes_acumulado || 0);
+  document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(interesAcumulado || 0);
   document.getElementById('creditoDetalleInteresCobrado').textContent = formatCurrency(interesCobrado || 0);
 
   // Cálculos financieros
   const montoOriginal = parseFloat(credito.monto_original);
   const saldoActual = parseFloat(credito.saldo_actual);
-  const interesAcumulado = parseFloat(credito.interes_acumulado || 0);
-  
+
   const totalAdeudado = saldoActual + interesAcumulado;
   const totalPagado = montoOriginal - saldoActual;
   const plazoMeses = credito.plazo_meses;
-  
+
   // Calcular meses restantes basado en la fecha de desembolso
   const fechaDesembolso = new Date(credito.fecha_desembolso);
   const fechaVencimiento = new Date(fechaDesembolso);
   fechaVencimiento.setMonth(fechaVencimiento.getMonth() + plazoMeses);
-  
+
   const hoy = new Date();
   const diferenciaMeses = (fechaVencimiento.getFullYear() - hoy.getFullYear()) * 12 + (fechaVencimiento.getMonth() - hoy.getMonth());
   const mesesRestantes = Math.max(0, diferenciaMeses);
@@ -824,7 +830,7 @@ const mostrarDetalleCreditoModal = (credito, usuario, movimientos) => {
 };
 
 const getTipoBadgeColor = (tipo) => {
-  switch(tipo) {
+  switch (tipo) {
     case 'desembolso': return '#094a5e';
     case 'abono': return '#27ae60';
     case 'interes': return '#f39c12';

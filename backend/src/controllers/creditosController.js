@@ -32,7 +32,7 @@ export const crearCredito = async (req, res) => {
           porcentaje_interes,
           fecha_desembolso: fecha_desembolso || new Date().toISOString(),
           estado: 'activo',
-          interes_acumulado: 0,
+          interes_acumulado: interes_primer_mes,
         },
       ])
       .select();

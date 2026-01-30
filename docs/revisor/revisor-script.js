@@ -269,13 +269,19 @@ const mostrarDetalleCreditoModal = (credito, usuario, movimientos) => {
   document.getElementById('creditoDetallePlazo').textContent = credito.plazo_meses;
   document.getElementById('creditoDetalleTasa').textContent = credito.porcentaje_interes;
   document.getElementById('creditoDetalleEstado').innerHTML = `<span class="badge ${credito.estado === 'activo' ? 'badge-success' : credito.estado === 'pagado' ? 'badge-info' : 'badge-danger'}">${credito.estado.toUpperCase()}</span>`;
-  document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(credito.interes_acumulado || 0);
+  const interesAcumuladoMov = (movimientos || [])
+    .filter(m => m.tipo_movimiento === 'interes')
+    .reduce((sum, m) => sum + (parseFloat(m.monto) || 0), 0);
+  const interesAcumulado = Math.max(
+    parseFloat(credito.interes_acumulado || 0),
+    interesAcumuladoMov
+  );
+  document.getElementById('creditoDetalleInteresAcum').textContent = formatCurrency(interesAcumulado || 0);
   document.getElementById('creditoDetalleInteresCobrado').textContent = formatCurrency(credito.interes_cobrado || 0);
 
   // Cálculos financieros
   const montoOriginal = parseFloat(credito.monto_original);
   const saldoActual = parseFloat(credito.saldo_actual);
-  const interesAcumulado = parseFloat(credito.interes_acumulado || 0);
   
   const totalAdeudado = saldoActual + interesAcumulado;
   const totalPagado = montoOriginal - saldoActual;
