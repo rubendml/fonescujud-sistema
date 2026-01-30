@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecreto';
 
 export function authMiddleware(req, res, next) {
+  if (req.method === 'OPTIONS') return next();
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Token requerido' });
