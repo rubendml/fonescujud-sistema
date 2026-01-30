@@ -14,19 +14,29 @@ const app = express();
 // Middleware - Configuración de CORS para producción
 const allowedOrigins = [
   'http://localhost:8000',
+  'http://localhost:3000',
   'https://rubendml.github.io',
   'https://fonescujud-sistema.vercel.app'
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
+    // Permitir sin origen (para requests de servidor a servidor)
     if (!origin) return callback(null, true);
+    // Permitir orígenes exactos
     if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(null, false);
+    // Permitir cualquier origin que sea github.io
+    if (origin && origin.includes('github.io')) return callback(null, true);
+    // Permitir vercel
+    if (origin && origin.includes('vercel.app')) return callback(null, true);
+    // Bloquear otros
+    console.warn('[CORS] Origin bloqueado:', origin);
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));

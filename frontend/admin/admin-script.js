@@ -40,7 +40,8 @@ const authFetch = async (url, options = {}) => {
     headers: {
       ...headers,
       ...options.headers
-    }
+    },
+    credentials: 'include'
   });
   
   if (handleAuthError(response)) {
