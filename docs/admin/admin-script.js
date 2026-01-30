@@ -719,11 +719,60 @@ const buscarCreditoPorCedula = async (cedula) => {
 };
 
 // Función wrapper para buscar desde sección de movimientos
-const buscarCreditoPorCedulaMovimientos = () => {
+const buscarCreditoPorCedulaMovimientos = async () => {
   const input = document.getElementById('movimientosCedulaBuscar');
-  if (input) {
-    const cedula = input.value.trim();
-    buscarCreditoPorCedula(cedula);
+  if (!input) return;
+  
+  const cedula = input.value.trim();
+  if (!cedula) {
+    showToast('Por favor ingresa una cédula', 'warning');
+    return;
+  }
+
+  try {
+    if (!creditosCache || creditosCache.length === 0) {
+      await fetchCreditos();
+    }
+
+    const creditos = creditosCache.filter(c => c.usuarios?.cedula === cedula);
+
+    if (!creditos || creditos.length === 0) {
+      showToast('Este usuario no tiene créditos registrados', 'info');
+      return;
+    }
+
+    // Buscar el crédito más reciente o activo
+    let creditoSeleccionado = creditos.find(c => c.estado === 'activo') || creditos[0];
+    const usuario = {
+      nombre: creditoSeleccionado.usuarios?.nombre || 'Usuario',
+      cedula: creditoSeleccionado.usuarios?.cedula || cedula,
+      email: creditoSeleccionado.usuarios?.email || 'N/A',
+      telefono: creditoSeleccionado.usuarios?.telefono || 'N/A'
+    };
+
+    // Mostrar el modal de detalle
+    mostrarDetalleCreditoModal(creditoSeleccionado, usuario);
+
+    // Filtrar los movimientos del crédito
+    const response = await authFetch(`${API_BASE_URL}/movimientos`);
+    if (!response.ok) throw new Error('Error al cargar movimientos');
+    const todosMovimientos = await response.json();
+    
+    // Filtrar movimientos del crédito seleccionado
+    const movimientosCredito = todosMovimientos.filter(m => m.credito_id === creditoSeleccionado.id);
+    
+    if (movimientosCredito.length === 0) {
+      showToast(`El crédito #${creditoSeleccionado.id} no tiene movimientos registrados`, 'info');
+    } else {
+      showToast(`Mostrando ${movimientosCredito.length} movimiento(s) del crédito #${creditoSeleccionado.id}`, 'success');
+    }
+    
+    // Mostrar solo los movimientos de este crédito
+    displayMovimientos(movimientosCredito);
+    
+  } catch (error) {
+    console.error('Error al buscar crédito:', error);
+    showToast('Error al buscar crédito: ' + error.message, 'error');
   }
 };
 
