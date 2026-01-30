@@ -677,10 +677,19 @@ const verDetalleCredito = async (creditoId) => {
     // Obtener movimientos del crédito
     let movimientos = [];
     try {
-      const movimientosResponse = await authFetch(`${API_BASE_URL}/movimientos/credito/${creditoId}`);
-      movimientos = movimientosResponse.ok ? await movimientosResponse.json() : [];
+      console.log('Buscando movimientos para crédito:', creditoId);
+      const url = `${API_BASE_URL}/movimientos/credito/${creditoId}`;
+      console.log('URL de movimientos:', url);
+      const movimientosResponse = await authFetch(url);
+      console.log('Respuesta de movimientos:', movimientosResponse.status, movimientosResponse.statusText);
+      if (movimientosResponse.ok) {
+        movimientos = await movimientosResponse.json();
+        console.log('Movimientos cargados:', movimientos);
+      } else {
+        console.warn('Error en respuesta de movimientos:', movimientosResponse.status);
+      }
     } catch (movError) {
-      console.warn('No se pudieron cargar movimientos:', movError.message);
+      console.error('Error al cargar movimientos:', movError);
     }
 
     mostrarDetalleCreditoModal(credito, usuario, movimientos);
@@ -721,10 +730,19 @@ const buscarCreditoPorCedula = async (cedula) => {
 
     let movimientos = [];
     try {
-      const movimientosResponse = await authFetch(`${API_BASE_URL}/movimientos/credito/${creditoSeleccionado.id}`);
-      movimientos = movimientosResponse.ok ? await movimientosResponse.json() : [];
+      console.log('Buscando movimientos para crédito:', creditoSeleccionado.id);
+      const url = `${API_BASE_URL}/movimientos/credito/${creditoSeleccionado.id}`;
+      console.log('URL de movimientos:', url);
+      const movimientosResponse = await authFetch(url);
+      console.log('Respuesta de movimientos:', movimientosResponse.status, movimientosResponse.statusText);
+      if (movimientosResponse.ok) {
+        movimientos = await movimientosResponse.json();
+        console.log('Movimientos cargados:', movimientos);
+      } else {
+        console.warn('Error en respuesta de movimientos:', movimientosResponse.status);
+      }
     } catch (movError) {
-      console.warn('No se pudieron cargar movimientos:', movError.message);
+      console.error('Error al cargar movimientos:', movError);
     }
 
     mostrarDetalleCreditoModal(creditoSeleccionado, usuario, movimientos);
