@@ -85,14 +85,21 @@ export const getResumenGeneral = async (req, res) => {
       },
     };
 
+    // Calcular efectivo disponible
+    // Ingresos: cuotas + intereses cobrados + multas recaudadas
+    // Menos: créditos desembolsados
+    const total_ingresos = total_cuotas + total_interes_recaudado + total_multas_recaudadas;
+    const efectivo_disponible = total_ingresos - total_desembolsado;
+
     // Retornar datos en el formato esperado por el frontend
     res.json({
       totales: {
-        ingresos: total_cuotas + total_interes_recaudado + total_multas_recaudadas,
+        ingresos: total_ingresos,
         cuotas: total_cuotas,
         creditos: total_desembolsado,
         multas: total_multas_recaudadas,
-        interes_recaudado: total_interes_recaudado
+        interes_recaudado: total_interes_recaudado,
+        efectivo_disponible: efectivo_disponible
       },
       resumen: {
         usuarios_afiliados: afiliados,

@@ -175,6 +175,14 @@ const updateDashboard = (data) => {
   if (multasRecaudadas) multasRecaudadas.textContent = formatCurrency(totales.multas || 0);
   if (multasPendientes) multasPendientes.textContent = formatCurrency(resumen?.multas_pendientes || 0);
 
+  // Efectivo disponible
+  const efectivoIngresos = document.getElementById('efectivoIngresos');
+  const efectivoDesembolsado = document.getElementById('efectivoDesembolsado');
+  const efectivoDisponible = document.getElementById('efectivoDisponible');
+  if (efectivoIngresos) efectivoIngresos.textContent = formatCurrency(totales.ingresos || 0);
+  if (efectivoDesembolsado) efectivoDesembolsado.textContent = formatCurrency(totales.creditos || 0);
+  if (efectivoDisponible) efectivoDisponible.textContent = formatCurrency(totales.efectivo_disponible || 0);
+
   // Financial summary section
   const ingresosTotal = document.getElementById('ingresosTotal');
   const ingresoCuotas = document.getElementById('ingresoCuotas');
