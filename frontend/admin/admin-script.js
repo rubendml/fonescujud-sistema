@@ -339,7 +339,7 @@ const displayCuotas = (cuotas) => {
   filtrados = filtrados.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
 
   if (filtrados.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No hay cuotas para mostrar</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">No hay cuotas para mostrar</td></tr>';
     return;
   }
 
