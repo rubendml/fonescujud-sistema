@@ -87,6 +87,8 @@ const showToast = (message, type = 'success') => {
 
 // Almacenar usuarios para usar en dropdowns
 let usuariosCache = [];
+// Almacenar créditos para filtros y búsqueda en vivo
+let creditosCache = [];
 
 // Cargar usuarios en los dropdowns
 const loadUsuariosInSelects = async () => {
@@ -340,7 +342,8 @@ const fetchCreditos = async () => {
     const response = await authFetch(`${API_BASE_URL}/creditos`);
     if (!response.ok) throw new Error('Error fetching creditos');
     const creditos = await response.json();
-    displayCreditos(creditos);
+    creditosCache = creditos;
+    displayCreditos(creditosCache);
   } catch (error) {
     console.error('Error:', error);
     displayError('creditos');
@@ -351,12 +354,26 @@ const displayCreditos = (creditos) => {
   const tbody = document.querySelector('#creditosTable');
   if (!tbody) return;
 
-  if (creditos.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No hay créditos registrados</td></tr>';
+  const filtroEstado = document.getElementById('creditosFilter')?.value || '';
+  const filtroTexto = document.getElementById('creditosBuscarCedula')?.value?.trim().toLowerCase() || '';
+
+  const filtrados = (creditos || []).filter(c => {
+    if (filtroEstado && c.estado !== filtroEstado) return false;
+    if (!filtroTexto) return true;
+
+    const cedula = (c.usuarios?.cedula || '').toString().toLowerCase();
+    const nombre = (c.usuarios?.nombre || '').toString().toLowerCase();
+    const usuarioId = (c.usuario_id || '').toString().toLowerCase();
+
+    return cedula.includes(filtroTexto) || nombre.includes(filtroTexto) || usuarioId.includes(filtroTexto);
+  });
+
+  if (filtrados.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #999;">No hay créditos para mostrar</td></tr>';
     return;
   }
 
-  tbody.innerHTML = creditos.map(c => {
+  tbody.innerHTML = filtrados.map(c => {
     const usuarioNombre = c.usuarios?.nombre || `Usuario ${c.usuario_id}`;
     return `
       <tr>
@@ -489,21 +506,12 @@ const buscarCreditoPorCedula = async (cedula) => {
   }
 
   try {
-    // Buscar usuario con esa cédula
-    const usuariosResponse = await authFetch(`${API_BASE_URL}/usuarios`);
-    if (!usuariosResponse.ok) throw new Error('Error al buscar usuarios');
-    const usuarios = await usuariosResponse.json();
-    
-    const usuario = usuarios.find(u => u.cedula === cedula.trim());
-    if (!usuario) {
-      showToast('No se encontró usuario con esa cédula', 'warning');
-      return;
+    if (!creditosCache || creditosCache.length === 0) {
+      await fetchCreditos();
     }
 
-    // Buscar créditos del usuario
-    const creditosResponse = await authFetch(`${API_BASE_URL}/creditos/usuario/${usuario.id}`);
-    if (!creditosResponse.ok) throw new Error('Error al buscar créditos');
-    const creditos = await creditosResponse.json();
+    const cedulaBuscar = cedula.trim();
+    const creditos = creditosCache.filter(c => c.usuarios?.cedula === cedulaBuscar);
 
     if (!creditos || creditos.length === 0) {
       showToast('Este usuario no tiene créditos registrados', 'info');
@@ -512,12 +520,21 @@ const buscarCreditoPorCedula = async (cedula) => {
 
     // Buscar el crédito más reciente o activo
     let creditoSeleccionado = creditos.find(c => c.estado === 'activo') || creditos[0];
-    
-    // Obtener movimientos del crédito
-    const movimientosResponse = await authFetch(`${API_BASE_URL}/movimientos/credito/${creditoSeleccionado.id}`);
-    const movimientos = movimientosResponse.ok ? await movimientosResponse.json() : [];
+    const usuario = {
+      nombre: creditoSeleccionado.usuarios?.nombre || 'Usuario',
+      cedula: creditoSeleccionado.usuarios?.cedula || cedulaBuscar,
+      email: creditoSeleccionado.usuarios?.email || 'N/A',
+      telefono: creditoSeleccionado.usuarios?.telefono || 'N/A'
+    };
 
-    // Mostrar el detalle del crédito
+    let movimientos = [];
+    try {
+      const movimientosResponse = await authFetch(`${API_BASE_URL}/movimientos/credito/${creditoSeleccionado.id}`);
+      movimientos = movimientosResponse.ok ? await movimientosResponse.json() : [];
+    } catch (movError) {
+      console.warn('No se pudieron cargar movimientos:', movError.message);
+    }
+
     mostrarDetalleCreditoModal(creditoSeleccionado, usuario, movimientos);
   } catch (error) {
     console.error('Error al buscar crédito:', error);
@@ -1092,10 +1109,24 @@ document.getElementById('creditosBuscarCedula')?.addEventListener('keypress', (e
   }
 });
 
+// Filtrado en vivo de créditos
+document.getElementById('creditosBuscarCedula')?.addEventListener('input', () => {
+  displayCreditos(creditosCache);
+});
+
 // Filtro de usuarios - búsqueda por nombre
 document.getElementById('usuariosSearch')?.addEventListener('input', (e) => {
   const searchTerm = e.target.value;
   displayUsuarios(usuariosCache, searchTerm);
+});
+
+// Filtro de créditos
+document.getElementById('creditosFilter')?.addEventListener('change', () => {
+  if (creditosCache && creditosCache.length > 0) {
+    displayCreditos(creditosCache);
+  } else {
+    fetchCreditos();
+  }
 });
 
 // Filtro de créditos
