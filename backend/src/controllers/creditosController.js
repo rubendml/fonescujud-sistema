@@ -266,13 +266,15 @@ export const registrarInteres = async (req, res) => {
     if (errorCredito) throw errorCredito;
     if (!credito) throw new Error('Crédito no encontrado');
 
-    // Solo actualizar el interés acumulado, NO el saldo_actual
-    const nuevo_interes = (credito.interes_acumulado || 0) + monto;
+    // Actualizar tanto el interés acumulado como el interés cobrado
+    const nuevo_interes_acumulado = (credito.interes_acumulado || 0) + monto;
+    const nuevo_interes_cobrado = (credito.interes_cobrado || 0) + monto;
 
     const { data: actualizacion, error: errorActualizacion } = await supabaseAdmin
       .from('creditos')
       .update({
-        interes_acumulado: nuevo_interes
+        interes_acumulado: nuevo_interes_acumulado,
+        interes_cobrado: nuevo_interes_cobrado
       })
       .eq('id', credito_id)
       .select();
