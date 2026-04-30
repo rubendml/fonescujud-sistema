@@ -74,6 +74,8 @@ const updateDashboard = (data) => {
   const { totales, resumen } = data;
 
   console.log('📊 Totales:', totales);
+  console.log('💰 Abonos:', totales.abonos);
+  console.log('💵 Disponible:', totales.efectivo_disponible);
 
   // ===============================
   // TARJETAS PRINCIPALES
@@ -88,7 +90,7 @@ const updateDashboard = (data) => {
     (document.getElementById('totalCreditos').textContent = formatCurrency(totales.creditos));
 
   document.getElementById('totalPorCobrar') &&
-    (document.getElementById('totalPorCobrar').textContent = formatCurrency(totales.multas));
+    (document.getElementById('totalPorCobrar').textContent = formatCurrency(resumen?.saldo_pendiente || 0));
 
   // ===============================
   // INGRESOS
@@ -105,15 +107,16 @@ const updateDashboard = (data) => {
   document.getElementById('ingresoMultas') &&
     (document.getElementById('ingresoMultas').textContent = formatCurrency(totales.multas));
 
-  // 🔥 ABONOS (CORREGIDO)
+  // 🔥 ABONOS (YA FUNCIONAL)
   document.getElementById('ingresoAbonos') &&
-    (document.getElementById('ingresoAbonos').textContent = formatCurrency(totales.abonos));
+    (document.getElementById('ingresoAbonos').textContent =
+      formatCurrency(totales.abonos ?? 0));
 
-  // 🔥 DISPONIBLE (CORREGIDO)
+  // 🔥 DISPONIBLE (YA FUNCIONAL)
   document.getElementById('ingresoDisponible') &&
     (document.getElementById('ingresoDisponible').textContent =
-      formatCurrency(totales.efectivo_disponible));
-  console.log('EFECTIVO DISPONIBLE:', totales.efectivo_disponible);
+      formatCurrency(totales.efectivo_disponible ?? 0));
+
   // ===============================
   // PRÉSTAMOS
   // ===============================
