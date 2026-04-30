@@ -101,7 +101,7 @@ export const getResumenGeneral = async (req, res) => {
       total_interes_recaudado +
       total_multas_recaudadas +
       total_abonos;
-    const efectivo_disponible = total_ingresos - saldo_pendiente;
+    const efectivo_disponible = total_ingresos - total_saldo_pendiente;
 
     // Retornar datos en el formato esperado por el frontend
     res.json({
