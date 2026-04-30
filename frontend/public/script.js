@@ -40,7 +40,7 @@ const fetchDashboardData = async () => {
   try {
     showLoading();
     console.log('Fetching from:', `${API_BASE_URL}/dashboard`);
-    
+
     const response = await fetch(`${API_BASE_URL}/dashboard`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
@@ -48,7 +48,7 @@ const fetchDashboardData = async () => {
     console.log('Data received:', data);
     updateDashboard(data);
     showContent();
-    
+
     // Update timestamp
     const now = new Date();
     const el = document.getElementById('lastUpdate');
@@ -113,11 +113,15 @@ const updateDashboard = (data) => {
   const porCobrarTotal = document.getElementById('porCobrarTotal');
   const porCobrarSaldos = document.getElementById('porCobrarSaldos');
   const porCobrarMultas = document.getElementById('porCobrarMultas');
+  const ingresoAbonos = document.getElementById('ingresoAbonos');
+  const ingresoDisponible = document.getElementById('ingresoDisponible');
 
   if (ingresosTotal) ingresosTotal.textContent = formatCurrency(totales.ingresos || 0);
   if (ingresoCuotas) ingresoCuotas.textContent = formatCurrency(totales.cuotas || 0);
   if (ingresoInteres) ingresoInteres.textContent = formatCurrency(totales.interes_recaudado || 0);
   if (ingresoMultas) ingresoMultas.textContent = formatCurrency(totales.multas || 0);
+  if (ingresoAbonos) ingresoAbonos.textContent = formatCurrency(totales.abonos || 0);
+  if (ingresoDisponible) ingresoDisponible.textContent = formatCurrency(totales.efectivo_disponible || 0);
   if (fondosPrestamos) fondosPrestamos.textContent = formatCurrency(totales.creditos || 0);
   if (porCobrarTotal) porCobrarTotal.textContent = formatCurrency((resumen?.saldo_pendiente || 0) + (totales.multas || 0));
   if (porCobrarSaldos) porCobrarSaldos.textContent = formatCurrency(resumen?.saldo_pendiente || 0);
