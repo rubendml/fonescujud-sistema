@@ -113,8 +113,15 @@ const updateDashboard = (data) => {
   const porCobrarTotal = document.getElementById('porCobrarTotal');
   const porCobrarSaldos = document.getElementById('porCobrarSaldos');
   const porCobrarMultas = document.getElementById('porCobrarMultas');
-  const ingresoAbonos = document.getElementById('ingresoAbonos');
-  const ingresoDisponible = document.getElementById('ingresoDisponible');
+  const totales = data.totales;
+
+  // Abonos
+  document.getElementById('ingresoAbonos').textContent =
+    `$ ${totales.abonos?.toLocaleString('es-CO') || 0}`;
+
+  // Disponible
+  document.getElementById('ingresoDisponible').textContent =
+    `$ ${totales.efectivo_disponible?.toLocaleString('es-CO') || 0}`;
 
   if (ingresosTotal) ingresosTotal.textContent = formatCurrency(totales.ingresos || 0);
   if (ingresoCuotas) ingresoCuotas.textContent = formatCurrency(totales.cuotas || 0);
