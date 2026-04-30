@@ -111,8 +111,9 @@ const updateDashboard = (data) => {
 
   // 🔥 DISPONIBLE (CORREGIDO)
   document.getElementById('ingresoDisponible') &&
-    (document.getElementById('ingresoDisponible').textContent = formatCurrency(totales.efectivo_disponible));
-
+    (document.getElementById('ingresoDisponible').textContent =
+      formatCurrency(totales.efectivo_disponible));
+  console.log('EFECTIVO DISPONIBLE:', totales.efectivo_disponible);
   // ===============================
   // PRÉSTAMOS
   // ===============================
