@@ -94,7 +94,7 @@ export const getResumenGeneral = async (req, res) => {
     };
 
     // Calcular efectivo disponible
-    // Ingresos: cuotas + intereses cobrados + multas recaudadas
+    // Ingresos: cuotas + intereses cobrados + multas recaudadas + abonos (dinero que regresa al fondo)
     // Menos: créditos desembolsados
     const total_ingresos =
       total_cuotas +
